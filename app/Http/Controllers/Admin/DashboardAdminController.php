@@ -15,6 +15,17 @@ class DashboardAdminController extends Controller
         $totalMentees = User::where('role', 'mente')->count();
         $totalMentors = User::where('role', 'mentor')->count();
 
-        return view('admin.dashboard', compact('totalClasses', 'totalMentees', 'totalMentors'));
+        $courses = Course::with(['mentor', 'users'])
+            ->get()
+            ->map(function ($course) {
+                return [
+                    'id' => $course->course_id,
+                    'name' => $course->course_title,
+                    'mentor_name' => $course->mentor ? $course->mentor->name : 'No mentor assigned',
+                    'participants_count' => $course->users->count(),
+                ];
+            });
+
+        return view('admin.dashboard', compact('totalClasses', 'totalMentees', 'totalMentors', 'courses'));
     }
 }

@@ -35,43 +35,21 @@
                     <tr class="bg-gray-100">
                         <th class="text-left p-2">Kelompok</th>
                         <th class="text-left p-2">Mentor</th>
-                        <th class="text-left p-2">Data Presensi</th>
+                        <th class="text-left p-2">Jumlah Peserta</th>
                         <th class="text-left p-2">Unduh Data</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach ($courses as $course)
                     <tr>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
+                        <td class="p-2">{{$course['name']}}</td>
+                        <td class="p-2">{{$course['mentor_name']}}</td>
+                        <td class="p-2">{{$course['participants_count']}}</td>
                         <td class="p-2">
                             <button class="bg-blue-500 text-white px-4 py-2 rounded">Unduh</button>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded">Unduh</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded">Unduh</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">aa</td>
-                        <td class="p-2">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded">Unduh</button>
-                        </td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
