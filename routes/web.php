@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardAdminController as DashboardAdminControl
 use App\Http\Controllers\Home\HomeController as HomeController;
 use App\Http\Controllers\MyCourse\MyCourseController as MyCourseController;
 use App\Http\Controllers\MyCourseMentor\MyCourseMentorController as MyCourseMentorController;
+use App\Http\Controllers\Attendance\AttendanceController as AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LogbookController;
@@ -54,6 +55,7 @@ Route::delete('/admin/course/delete/{id}', [AdminDataCourseController::class, 'd
 
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'], 'admin.dashboard')->name('admin.dashboard');
+    Route::get('/dashboard/{id}/download-pdf', [DashboardAdminController::class, 'downloadPdf'])->name('admin.dashboard.download-pdf');
     Route::get('/mentor', [AdminDataMentorController::class, 'getMentor'])->name('admin.mentor');
     Route::get('/class', [AdminDataCourseController::class, 'getAllCourse'])->name('admin.class');
     Route::view('/attendance', 'admin.attendance ')->name('admin.attendance');
@@ -62,7 +64,6 @@ Route::prefix('admin')->group(function () {
 //end admin
 
 //mentor
-
 Route::prefix('mentor')->group(function () {
     Route::get('/mentoring/{slug}', [MyCourseMentorController::class, 'index'])->name('mentor.mentoring');
     Route::get('/home',  [HomeController::class, 'index'])->name('courses.index');
@@ -70,6 +71,11 @@ Route::prefix('mentor')->group(function () {
     Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
     Route::post('/module/store', [MyCourseMentorController::class, 'store'])->name('module.store');
 });
+
+
+//attendace
+Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
+
 
 //announcement
 Route::post('/upload-announcement', [AnnouncementController::class, 'upload']);
@@ -80,3 +86,8 @@ Route::get('/dashboard', function () {
 })->middleware('auth')->name('dashboard');
 
 Route::view('/not-mentor', 'mentee.notMentor')->name('notMentor');
+
+
+Route::get('/get-csrf-token', function () {
+    return csrf_token();
+});
