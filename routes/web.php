@@ -55,6 +55,7 @@ Route::delete('/admin/course/delete/{id}', [AdminDataCourseController::class, 'd
 
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'], 'admin.dashboard')->name('admin.dashboard');
+    Route::get('/dashboard/{id}/download-pdf', [DashboardAdminController::class, 'downloadPdf'])->name('admin.dashboard.download-pdf');
     Route::get('/mentor', [AdminDataMentorController::class, 'getMentor'])->name('admin.mentor');
     Route::get('/class', [AdminDataCourseController::class, 'getAllCourse'])->name('admin.class');
     Route::view('/attendance', 'admin.attendance ')->name('admin.attendance');
@@ -85,3 +86,8 @@ Route::get('/dashboard', function () {
 })->middleware('auth')->name('dashboard');
 
 Route::view('/not-mentor', 'mentee.notMentor')->name('notMentor');
+
+
+Route::get('/get-csrf-token', function () {
+    return csrf_token();
+});

@@ -46,7 +46,7 @@
                         <td class="p-2">{{$course['mentor_name']}}</td>
                         <td class="p-2">{{$course['participants_count']}}</td>
                         <td class="p-2">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded">Unduh</button>
+                            <a href="{{route('admin.dashboard.download-pdf', $course['id'])}}"><button class="bg-blue-500 text-white px-4 py-2 rounded">Unduh</button></a>
                         </td>
                     </tr>
                     @endforeach
