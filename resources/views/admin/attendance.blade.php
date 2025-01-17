@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Attendance')
 
@@ -9,7 +9,7 @@
         
 
         <!-- Dashboard Content -->
-        <div class="container mx-auto p-4">
+        <div class="w-2/3 container mx-auto p-4">
             <!-- Accordion Component -->
             <div id="accordion-color" data-accordion="collapse"
                 data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CourseUser;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,11 +24,16 @@ class LogbookController extends Controller
             return redirect()->route('login');
         }
 
-        if (!in_array($user->role, ['admin', 'mentor'])) {
-            return redirect()->route('courses.index');
+        if (!in_array($user->role, ['petugas', 'mentor'])) {
+            return redirect()->route('notMentor');
         }
 
-        $courses = Course::where('mentor_id', $user->id)->firstOrFail();
+        $enrollCheck = CourseUser::where('user_id', $user->id)->first();
+        if (empty($enrollCheck)) {
+            return view('mentor.emptyCourse');
+        }
+
+        $courses = Course::where('mentor_id', $user->id)->first();
 
         $reports = Report::where('user_id', $user->id)
             ->where('course_id', $courses->course_id)
@@ -39,7 +45,7 @@ class LogbookController extends Controller
             'reports' => $reports
         ];
 
-        return view('mentee.logbook', compact('data'));
+        return view('mentor.logbook', compact('data'));
     }
 
 
@@ -98,5 +104,5 @@ class LogbookController extends Controller
     // Edit logbook
 
 
-    // 
+    //
 }

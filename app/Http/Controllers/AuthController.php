@@ -35,7 +35,14 @@ class AuthController extends Controller
             // Simpan role dalam session
             session(['role' => $role]);
 
-            return redirect()->intended('dashboard')->with('success', 'Login berhasil!');
+            if ($role === 'mente') {
+                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+            }
+            if ($role === 'mentor') {
+                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
+            } else {
+                return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
+            }
         }
 
         // Jika login gagal, kembalikan ke halaman login dengan pesan error

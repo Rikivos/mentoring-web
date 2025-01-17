@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard')
 
@@ -8,7 +8,7 @@
     @include('components.sidebar')
 
     <!-- Data Content -->
-    <div class="w-3/4 p-4 justify-between items-center container mx-auto">
+    <div class="w-2/3 p-4 justify-between items-center container mx-auto">
         <div x-data="mentorManager()">
             <!-- Table -->
             <div class="bg-white shadow-md rounded-md p-4">
