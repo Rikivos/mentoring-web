@@ -47,6 +47,11 @@ Route::get('/task-submission', function () {
     return view('mentee.taskSubmit');
 })->middleware('auth')->name('taskSubmit');
 
+//Presence
+Route::get('/presence', function () {
+    return view('mentee.presence');
+})->middleware('auth')->name('presence');
+
 //logbook
 
 
