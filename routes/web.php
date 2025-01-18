@@ -9,6 +9,7 @@ use App\Http\Controllers\MyCourse\MyCourseController as MyCourseController;
 use App\Http\Controllers\MyCourseMentor\MyCourseMentorController as MyCourseMentorController;
 use App\Http\Controllers\Attendance\AttendanceController as AttendanceController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
+use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LogbookController;
@@ -61,7 +62,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/class', [AdminDataCourseController::class, 'getAllCourse'])->name('admin.class');
     Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('admin.attendance');
     Route::get('/attendance/pdf/{id}', [AdminAttendanceController::class, 'generateRecapPDF'])->name('admin.attendance.pdf');
-    Route::view('/report', 'admin.report')->name('admin.report');
+    Route::get('/report', [AdminLogbookController::class, 'index'])->name('admin.report');
+    Route::post('/report/{id}/update', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
 });
 //end admin
 
