@@ -21,4 +21,9 @@ class Report extends Model
     protected $attributes = [
         'status' => 'pending', // Default value
     ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id');
+    }
 }
