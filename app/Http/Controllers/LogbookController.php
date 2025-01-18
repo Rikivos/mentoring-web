@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\File;
 
 class LogbookController extends Controller
 {
-    // Display all Logbook
-
-
     // Logbook by course
     public function indexByCourse()
     {
@@ -58,7 +55,7 @@ class LogbookController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'upload_date' => 'required|date',
-            'image' => 'nullable', // Tidak gunakan validasi 'image' karena ini Base64
+            'image' => 'nullable',
         ]);
 
         $user = Auth::user();
@@ -75,7 +72,6 @@ class LogbookController extends Controller
         $start_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $start_time);
         $end_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $end_time);
 
-        // Proses gambar Base64 jika tersedia
         if ($request->has('image')) {
             $base64Image = $request->input('image');
             $image = str_replace('data:image/jpeg;base64,', '', $base64Image);
@@ -87,7 +83,7 @@ class LogbookController extends Controller
 
         $report = new Report();
         $report->report_name = $request->input('report_name');
-        $report->report_photo = $imagePath; // Simpan path gambar
+        $report->report_photo = $imagePath;
         $report->description = $request->input('description');
         $report->start_time = $start_time;
         $report->end_time = $end_time;
@@ -99,10 +95,4 @@ class LogbookController extends Controller
 
         return redirect()->route('logbook.show')->with('success', 'Logbook berhasil ditambahkan');
     }
-
-
-    // Edit logbook
-
-
-    //
 }
