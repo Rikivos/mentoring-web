@@ -16,8 +16,7 @@ class LogbookController extends Controller
     {
         $courses = Course::with('reports')->get();
 
-        return response()->json($courses);
-        // return view('admin.report', compact('courses'));
+        return view('admin.report', compact('courses'));
     }
 
     public function updateLogbook(Request $request, $id)
