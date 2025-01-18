@@ -36,7 +36,6 @@
             <div id="general" class="accordion-collapse hidden">
                 <div class="accordion-body p-4">
                     <p>Konten sesi 2 akan ditambahkan di sini.</p>
-                    <button class="save-button mt-2 bg-blue-500 text-white py-1 px-4 rounded">Edit</button>
                 </div>
             </div>
         </div>

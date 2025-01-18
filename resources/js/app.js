@@ -1,4 +1,5 @@
 import "./bootstrap";
+import 'flowbite';
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 

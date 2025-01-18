@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard')
 
@@ -8,7 +8,7 @@
     @include('components.sidebar')
 
     <!-- Dashboard Content -->
-    <div class="w-3/4 p-4 justify-between items-center container mx-auto">
+    <div class="w-2/3 p-4 justify-between items-center container mx-auto">
         <!-- Dashboard Stats -->
         <div class="grid grid-cols-3 gap-4 mb-6">
             <div class="p-4 bg-white shadow-md rounded-md text-center">

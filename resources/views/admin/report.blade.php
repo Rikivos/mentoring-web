@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard - Kehadiran Mentoring')
 
@@ -8,7 +8,7 @@
     @include('components.sidebar')
 
     <!-- Data Content -->
-    <main class="w-3/4 p-4 container mx-auto">
+    <main class="w-2/3 p-4 container mx-auto">
         <!-- Section: Kehadiran Mentoring -->
         <section class="bg-white shadow-md rounded-md p-4">
             <header class="mb-4">
