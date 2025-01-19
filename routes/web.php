@@ -8,6 +8,7 @@ use App\Http\Controllers\Home\HomeController as HomeController;
 use App\Http\Controllers\MyCourse\MyCourseController as MyCourseController;
 use App\Http\Controllers\Mentor\MentorController as MentorController;
 use App\Http\Controllers\Mentor\AttendanceController as AttendanceController;
+use App\Http\Controllers\Mentor\TaskController as TaskController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
@@ -91,6 +92,8 @@ Route::prefix('mentor')->group(function () {
     Route::post('/module/{id}', [MentorController::class, 'update'])->name('module.update');
     Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
     Route::post('/attendance/{id}', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
+    Route::post('/task', [TaskController::class, 'store'])->name('task.store');
+    Route::post('/task/{id}', [TaskController::class, 'update'])->name('task.update');
 });
 
 //announcement
