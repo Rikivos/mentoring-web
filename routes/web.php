@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\DashboardAdminController as DashboardAdminControl
 use App\Http\Controllers\Home\HomeController as HomeController;
 use App\Http\Controllers\MyCourse\MyCourseController as MyCourseController;
 use App\Http\Controllers\Mentor\MentorController as MentorController;
-use App\Http\Controllers\Attendance\AttendanceController as AttendanceController;
+use App\Http\Controllers\Mentor\AttendanceController as AttendanceController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
@@ -89,12 +89,8 @@ Route::prefix('mentor')->group(function () {
     Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
     Route::post('/module/store', [MentorController::class, 'store'])->name('module.store');
     Route::post('/module/{id}', [MentorController::class, 'update'])->name('module.update');
+    Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
 });
-
-
-//attendace
-Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
-
 
 //announcement
 Route::post('/upload-announcement', [AnnouncementController::class, 'upload']);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Attendance;
+namespace App\Http\Controllers\Mentor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
@@ -17,7 +17,6 @@ class AttendanceController extends Controller
             'deadline' => 'required|date|after:attendance_open',
         ]);
 
-        // Jika validasi gagal
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -26,7 +25,6 @@ class AttendanceController extends Controller
             ], 422);
         }
 
-        // Buat attendance baru
         try {
             $attendance = Attendance::create([
                 'module_id' => $request->module_id,
