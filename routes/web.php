@@ -6,8 +6,9 @@ use App\Http\Controllers\Admin\AnnouncementController as AnnouncementController;
 use App\Http\Controllers\Admin\DashboardAdminController as DashboardAdminController;
 use App\Http\Controllers\Home\HomeController as HomeController;
 use App\Http\Controllers\MyCourse\MyCourseController as MyCourseController;
-use App\Http\Controllers\MyCourseMentor\MyCourseMentorController as MyCourseMentorController;
-use App\Http\Controllers\Attendance\AttendanceController as AttendanceController;
+use App\Http\Controllers\Mentor\MentorController as MentorController;
+use App\Http\Controllers\Mentor\AttendanceController as AttendanceController;
+use App\Http\Controllers\Mentor\TaskController as TaskController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
@@ -47,6 +48,11 @@ Route::get('/task-submission', function () {
     return view('mentee.taskSubmit');
 })->middleware('auth')->name('taskSubmit');
 
+//Presence
+Route::get('/presence', function () {
+    return view('mentee.presence');
+})->middleware('auth')->name('presence');
+
 //logbook
 
 
@@ -78,17 +84,17 @@ Route::prefix('admin')->group(function () {
 
 //mentor
 Route::prefix('mentor')->group(function () {
-    Route::get('/mentoring/{slug}', [MyCourseMentorController::class, 'index'])->name('mentor.mentoring');
+    Route::get('/mentoring/{slug}', [MentorController::class, 'index'])->name('mentor.mentoring');
     Route::get('/home',  [HomeController::class, 'index'])->name('courses.index');
     Route::post('/logbook', [LogbookController::class, 'add'])->name('logbook.add');
     Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
-    Route::post('/module/store', [MyCourseMentorController::class, 'store'])->name('module.store');
+    Route::post('/module/store', [MentorController::class, 'store'])->name('module.store');
+    Route::post('/module/{id}', [MentorController::class, 'update'])->name('module.update');
+    Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
+    Route::post('/attendance/{id}', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
+    Route::post('/task', [TaskController::class, 'store'])->name('task.store');
+    Route::post('/task/{id}', [TaskController::class, 'update'])->name('task.update');
 });
-
-
-//attendace
-Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
-
 
 //announcement
 Route::post('/upload-announcement', [AnnouncementController::class, 'upload']);
