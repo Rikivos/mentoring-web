@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\AnnouncementController as AnnouncementController;
 use App\Http\Controllers\Admin\DashboardAdminController as DashboardAdminController;
 use App\Http\Controllers\Home\HomeController as HomeController;
 use App\Http\Controllers\MyCourse\MyCourseController as MyCourseController;
-use App\Http\Controllers\MyCourseMentor\MyCourseMentorController as MyCourseMentorController;
+use App\Http\Controllers\Mentor\MentorController as MentorController;
 use App\Http\Controllers\Attendance\AttendanceController as AttendanceController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
@@ -83,12 +83,12 @@ Route::prefix('admin')->group(function () {
 
 //mentor
 Route::prefix('mentor')->group(function () {
-    Route::get('/mentoring/{slug}', [MyCourseMentorController::class, 'index'])->name('mentor.mentoring');
+    Route::get('/mentoring/{slug}', [MentorController::class, 'index'])->name('mentor.mentoring');
     Route::get('/home',  [HomeController::class, 'index'])->name('courses.index');
     Route::post('/logbook', [LogbookController::class, 'add'])->name('logbook.add');
     Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
-    Route::post('/module/store', [MyCourseMentorController::class, 'store'])->name('module.store');
-    Route::post('/module/{id}', [MyCourseMentorController::class, 'update'])->name('module.update');
+    Route::post('/module/store', [MentorController::class, 'store'])->name('module.store');
+    Route::post('/module/{id}', [MentorController::class, 'update'])->name('module.update');
 });
 
 

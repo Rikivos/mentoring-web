@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\MyCourseMentor;
+namespace App\Http\Controllers\Mentor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
@@ -8,7 +8,7 @@ use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-class MyCourseMentorController extends Controller
+class MentorController extends Controller
 {
     // Get all modules by course slug
     public function index($slug)
