@@ -1,339 +1,337 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="bg-blue-600 text-white">
-        <div class="container mx-auto flex justify-center items-center py-4 px-6">
-            <a href="/mentor/mentoring" class="text-lg font-bold mx-4 underline">Mentoring</a>
-            <a href="/mentor/participant" class="text-lg font-bold mx-4">Participants</a>
-        </div>
+<div class="bg-blue-600 text-white">
+    <div class="container mx-auto flex justify-center items-center py-4 px-6">
+        <a href="/mentor/mentoring" class="text-lg font-bold mx-4 underline">Mentoring</a>
+        <a href="/mentor/participant" class="text-lg font-bold mx-4">Participants</a>
+    </div>
+</div>
+
+<div class="container mx-auto p-4">
+    <div class="text-left mb-8">
+        <h1 class="text-3xl font-bold mb-4">Mentoring</h1>
     </div>
 
-    <div class="container mx-auto p-4">
-        <div class="text-left mb-8">
-            <h1 class="text-3xl font-bold mb-4">Mentoring</h1>
+    <div x-data="mentoringForm" class="accordion bg-white shadow rounded-lg p-6">
+        <div class="flex justify-end items-center mb-4">
+            <button id="expandAllBtn" class="text-blue-500 hover:underline">Expand all</button>
         </div>
 
-        <div x-data="mentoringForm" class="accordion bg-white shadow rounded-lg p-6">
-            <div class="flex justify-end items-center mb-4">
-                <button id="expandAllBtn" class="text-blue-500 hover:underline">Expand all</button>
+        <div class="accordion-item border rounded-lg mb-6">
+            <h2 class="accordion-header flex justify-between items-center px-4 py-3 bg-gray-100">
+                <button class="accordion-button text-left text-lg font-semibold flex items-center focus:outline-none">
+                    <span class="ml-2">General</span>
+                </button>
+                <button @click="showForm = !showForm" class="add-form-button text-blue-500 hover:underline">
+                    Add Activity or Resources
+                </button>
+            </h2>
+            <div x-show="showForm" class="accordion-collapse p-6 bg-white border-t">
+                <form @submit.prevent="submitForm" class="space-y-6">
+                    <!-- Module Title -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Module Title</label>
+                        <input x-model="formData.module_title" type="text"
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                            required />
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea x-model="formData.content" rows="4"
+                            class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">File</label>
+                        <div id="file-upload-area"
+                            class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:border-blue-500">
+                            <input type="file" @change="handleFileChange" multiple>
+                        </div>
+                        <p x-text="fileName" class="mt-2 text-sm text-gray-500"></p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" @click="showForm = false"
+                            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Cancel</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Save</button>
+                    </div>
+                </form>
             </div>
+        </div>
 
-            <div class="accordion-item border rounded-lg mb-6">
-                <h2 class="accordion-header flex justify-between items-center px-4 py-3 bg-gray-100">
-                    <button class="accordion-button text-left text-lg font-semibold flex items-center focus:outline-none">
-                        <span class="ml-2">General</span>
+        <!-- Existing Modules -->
+        @foreach ($modules as $key => $module)
+        <div class="accordion-item outline-2 outline outline-gray-200 rounded-lg mb-6">
+            <h2 class="accordion-header">
+                <button class="accordion-button w-full text-left bg-white p-4 flex items-center focus:outline-none"
+                    type="button" data-target="#module{{ $key }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="31" viewBox="0 0 30 31"
+                        fill="none" class="accordion-icon transition-transform duration-300">
+                        <circle cx="15" cy="15.5" r="14" stroke="black" stroke-width="1.5" />
+                        <path d="M11 6 L19 15.5 L11 25" stroke="black" stroke-width="1.875" stroke-linecap="round"
+                            stroke-linejoin="round" class="arrow-path" />
+                    </svg>
+                    <span class="text-lg font-semibold ml-2">{{ $module->module_title }}</span>
+                </button>
+            </h2>
+            <div id="module{{ $key }}" class="accordion-collapse hidden">
+                <div class="accordion-body p-4">
+                    <p>{{ $module->content }}</p>
+                    @if (!empty($module->file_path))
+                    <a href="{{ $module->module_file_url }}"
+                        class="text-blue-500 hover:underline flex items-center gap-2">
+                        <img src="/images/pdf-icon.svg" alt="PDF Icon" class="w-5 h-5">
+                        Download Module
+                    </a>
+                    @endif
+                    <button
+                        @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
+                        class="save-button mt-2 bg-blue-500 text-white py-1 px-4 rounded">
+                        Edit
                     </button>
-                    <button @click="showForm = !showForm" class="add-form-button text-blue-500 hover:underline">
-                        Add Activity or Resources
-                    </button>
-                </h2>
-                <div x-show="showForm" class="accordion-collapse p-6 bg-white border-t">
-                    <form @submit.prevent="submitForm" class="space-y-6">
-                        <!-- Module Title -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Module Title</label>
-                            <input x-model="formData.module_title" type="text"
-                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                required />
-                        </div>
-
-                        <!-- Description -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Description</label>
-                            <textarea x-model="formData.content" rows="4"
-                                class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
-                        </div>
-
-                        <!-- File Upload -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">File</label>
-                            <div id="file-upload-area"
-                                class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:border-blue-500">
-                                <input type="file" @change="handleFileChange" multiple>
-                            </div>
-                            <p x-text="fileName" class="mt-2 text-sm text-gray-500"></p>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="flex justify-end space-x-4">
-                            <button type="button" @click="showForm = false"
-                                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Cancel</button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Save</button>
-                        </div>
-                    </form>
                 </div>
             </div>
+        </div>
+        @endforeach
 
-            <!-- Existing Modules -->
-            @foreach ($modules as $key => $module)
-                <div class="accordion-item outline-2 outline outline-gray-200 rounded-lg mb-6">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button w-full text-left bg-white p-4 flex items-center focus:outline-none"
-                            type="button" data-target="#module{{ $key }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="31" viewBox="0 0 30 31"
-                                fill="none" class="accordion-icon transition-transform duration-300">
-                                <circle cx="15" cy="15.5" r="14" stroke="black" stroke-width="1.5" />
-                                <path d="M11 6 L19 15.5 L11 25" stroke="black" stroke-width="1.875" stroke-linecap="round"
-                                    stroke-linejoin="round" class="arrow-path" />
-                            </svg>
-                            <span class="text-lg font-semibold ml-2">{{ $module->module_title }}</span>
-                        </button>
-                    </h2>
-                    <div id="module{{ $key }}" class="accordion-collapse hidden">
-                        <div class="accordion-body p-4">
-                            <p>{{ $module->content }}</p>
-                            @if (!empty($module->file_path))
-                                <a href="{{ $module->module_file_url }}"
-                                    class="text-blue-500 hover:underline flex items-center gap-2">
-                                    <img src="/images/pdf-icon.svg" alt="PDF Icon" class="w-5 h-5">
-                                    Download Module
-                                </a>
-                                <button
-                                    @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
-                                    class="save-button mt-2 bg-blue-500 text-white py-1 px-4 rounded">
-                                    Edit
-                                </button>
-                            @else
-                                <br>
-                            @endif
+        <!-- Edit Modal -->
+        <div x-show="isModalOpen" @keydown.window.escape="closeEditModal"
+            class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="bg-black opacity-50 absolute inset-0"></div>
+
+            <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
+                <h3 class="text-lg font-bold mb-4">Edit Module</h3>
+                <form @submit.prevent="submitForm" class="space-y-4">
+                    <!-- Module Title -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Module Title</label>
+                        <input x-model="formData.module_title" type="text"
+                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                            required>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea x-model="formData.content" rows="4"
+                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    </div>
+
+                    <!-- Submission Types -->
+                    <div>
+                        <h4 class="text-md font-semibold mb-2">Submission Types</h4>
+                        <div class="flex items-center space-x-2">
+                            <label class="flex items-center">
+                                <input x-model="formData.submission_types.text" type="checkbox" class="mr-2">
+                                Online text
+                            </label>
+                            <label class="flex items-center">
+                                <input x-model="formData.submission_types.file" type="checkbox" class="mr-2">
+                                File submissions
+                            </label>
+                        </div>
+                        <div class="mt-2">
+                            <label class="block text-sm font-medium text-gray-700">Maximum number of upload
+                                files</label>
+                            <input x-model="formData.max_upload_files" type="number" min="1"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="mt-2">
+                            <label class="block text-sm font-medium text-gray-700">Accept file types</label>
+                            <select x-model="formData.accept_file_types"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <option value="PDF">PDF</option>
+                                <option value="DOC">DOC</option>
+                                <option value="Image">Image</option>
+                            </select>
                         </div>
                     </div>
-                </div>
-            @endforeach
 
-            <!-- Edit Modal -->
-            <div x-show="isModalOpen" @keydown.window.escape="closeEditModal"
-                class="fixed inset-0 flex items-center justify-center z-50">
-                <div class="bg-black opacity-50 absolute inset-0"></div>
-
-                <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
-                    <h3 class="text-lg font-bold mb-4">Edit Module</h3>
-                    <form @submit.prevent="submitForm" class="space-y-4">
-                        <!-- Module Title -->
+                    <!-- Attendance -->
+                    <div>
+                        <h4 class="text-md font-semibold mb-2">Attendance</h4>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Module Title</label>
-                            <input x-model="formData.module_title" type="text"
-                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                required>
+                            <label class="block text-sm font-medium text-gray-700">Name</label>
+                            <input x-model="formData.attendance.name" type="text"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                         </div>
-
-                        <!-- Description -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Description</label>
-                            <textarea x-model="formData.content" rows="4"
-                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                        <div class="mt-2">
+                            <label class="block text-sm font-medium text-gray-700">Type</label>
+                            <select x-model="formData.attendance.type"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <option value="all">All students</option>
+                                <option value="group">Group</option>
+                            </select>
                         </div>
-
-                        <!-- Submission Types -->
-                        <div>
-                            <h4 class="text-md font-semibold mb-2">Submission Types</h4>
-                            <div class="flex items-center space-x-2">
-                                <label class="flex items-center">
-                                    <input x-model="formData.submission_types.text" type="checkbox" class="mr-2">
-                                    Online text
-                                </label>
-                                <label class="flex items-center">
-                                    <input x-model="formData.submission_types.file" type="checkbox" class="mr-2">
-                                    File submissions
-                                </label>
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Maximum number of upload
-                                    files</label>
-                                <input x-model="formData.max_upload_files" type="number" min="1"
-                                    class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Accept file types</label>
-                                <select x-model="formData.accept_file_types"
-                                    class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="PDF">PDF</option>
-                                    <option value="DOC">DOC</option>
-                                    <option value="Image">Image</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Attendance -->
-                        <div>
-                            <h4 class="text-md font-semibold mb-2">Attendance</h4>
+                        <div class="mt-2 flex space-x-2">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Name</label>
-                                <input x-model="formData.attendance.name" type="text"
+                                <label class="block text-sm font-medium text-gray-700">Date</label>
+                                <input x-model="formData.attendance.date" type="date"
                                     class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                             </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Type</label>
-                                <select x-model="formData.attendance.type"
-                                    class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="all">All students</option>
-                                    <option value="group">Group</option>
-                                </select>
-                            </div>
-                            <div class="mt-2 flex space-x-2">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Date</label>
-                                    <input x-model="formData.attendance.date" type="date"
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Time</label>
+                                <div class="flex space-x-2">
+                                    <input x-model="formData.attendance.time_start" type="time"
+                                        class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                    <span class="self-center">to</span>
+                                    <input x-model="formData.attendance.time_end" type="time"
                                         class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Time</label>
-                                    <div class="flex space-x-2">
-                                        <input x-model="formData.attendance.time_start" type="time"
-                                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                                        <span class="self-center">to</span>
-                                        <input x-model="formData.attendance.time_end" type="time"
-                                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                                    </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <label class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea x-model="formData.attendance.description" rows="3"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+                        <div class="mt-2">
+                            <h5 class="text-sm font-medium">Status set</h5>
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <input x-model="formData.attendance.status[0].acronym" type="text"
+                                        class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="H">
+                                    <input x-model="formData.attendance.status[0].description" type="text"
+                                        class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Hadir">
                                 </div>
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Description</label>
-                                <textarea x-model="formData.attendance.description" rows="3"
-                                    class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-                            <div class="mt-2">
-                                <h5 class="text-sm font-medium">Status set</h5>
-                                <div class="space-y-2">
-                                    <div class="flex items-center space-x-2">
-                                        <input x-model="formData.attendance.status[0].acronym" type="text"
-                                            class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="H">
-                                        <input x-model="formData.attendance.status[0].description" type="text"
-                                            class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Hadir">
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <input x-model="formData.attendance.status[1].acronym" type="text"
-                                            class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="I">
-                                        <input x-model="formData.attendance.status[1].description" type="text"
-                                            class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Izin">
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <input x-model="formData.attendance.status[2].acronym" type="text"
-                                            class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="T">
-                                        <input x-model="formData.attendance.status[2].description" type="text"
-                                            class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Terlambat">
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <input x-model="formData.attendance.status[3].acronym" type="text"
-                                            class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="A">
-                                        <input x-model="formData.attendance.status[3].description" type="text"
-                                            class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                            placeholder="Tidak hadir">
-                                    </div>
+                                <div class="flex items-center space-x-2">
+                                    <input x-model="formData.attendance.status[1].acronym" type="text"
+                                        class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="I">
+                                    <input x-model="formData.attendance.status[1].description" type="text"
+                                        class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Izin">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input x-model="formData.attendance.status[2].acronym" type="text"
+                                        class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="T">
+                                    <input x-model="formData.attendance.status[2].description" type="text"
+                                        class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Terlambat">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input x-model="formData.attendance.status[3].acronym" type="text"
+                                        class="w-12 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="A">
+                                    <input x-model="formData.attendance.status[3].description" type="text"
+                                        class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Tidak hadir">
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Action Buttons -->
-                        <div class="flex justify-end space-x-2">
-                            <button type="button" @click="closeEditModal"
-                                class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" @click="closeEditModal"
+                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
+                    </div>
+                </form>
             </div>
-
-
         </div>
+
+
     </div>
+</div>
 
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('mentoringForm', () => ({
-                showForm: false,
-                isModalOpen: false,
-                file: null,
-                fileName: '',
-                formData: {
-                    module_title: '',
-                    content: '',
-                    course_id: '{{ $course->course_id }}',
-                },
-                editingModule: null,
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('mentoringForm', () => ({
+            showForm: false,
+            isModalOpen: false,
+            file: null,
+            fileName: '',
+            formData: {
+                module_title: '',
+                content: '',
+                course_id: '{{ $course->course_id }}',
+            },
+            editingModule: null,
 
-                openEditModal(module) {
-                    this.editingModule = module;
-                    this.formData.module_title = module.module_title;
-                    this.formData.content = module.content;
-                    this.isModalOpen = true;
-                },
+            openEditModal(module) {
+                this.editingModule = module;
+                this.formData.module_title = module.module_title;
+                this.formData.content = module.content;
+                this.isModalOpen = true;
+            },
 
-                closeEditModal() {
-                    this.isModalOpen = false;
-                    this.editingModule = null;
-                    this.formData.module_title = '';
-                    this.formData.content = '';
-                },
+            closeEditModal() {
+                this.isModalOpen = false;
+                this.editingModule = null;
+                this.formData.module_title = '';
+                this.formData.content = '';
+            },
 
-                handleFileChange(event) {
-                    const files = event.target.files;
-                    if (files.length > 0) {
-                        this.file = files[0];
-                        this.fileName = this.file.name;
-                    } else {
-                        this.file = null;
-                        this.fileName = '';
-                    }
-                },
-
-                async submitForm() {
-                    try {
-                        const formData = new FormData();
-                        formData.append('module_title', this.formData.module_title);
-                        formData.append('content', this.formData.content);
-                        formData.append('course_id', this.formData.course_id);
-                        if (this.file) {
-                            formData.append('file_path', this.file);
-                        }
-
-                        const response = this.editingModule ?
-                            await axios.post(`/module/${this.editingModule.id}`, formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                },
-                                method: 'POST',
-                            }) :
-                            await axios.post('{{ route('module.store') }}', formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                },
-                            });
-
-                        alert(this.editingModule ? 'Module updated successfully' :
-                            'Module created successfully');
-                        window.location.reload();
-                    } catch (error) {
-                        console.error(error);
-                        alert('An error occurred');
-                    }
-                },
-            }));
-        });
-        document.querySelectorAll('.accordion-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const target = document.querySelector(this.getAttribute('data-target'));
-                const icon = this.querySelector('.accordion-icon');
-
-                // Toggle visibility of the content
-                target.classList.toggle('hidden');
-
-                // Rotate the icon
-                if (target.classList.contains('hidden')) {
-                    icon.style.transform = 'rotate(0deg)'; // Panah ke kanan
+            handleFileChange(event) {
+                const files = event.target.files;
+                if (files.length > 0) {
+                    this.file = files[0];
+                    this.fileName = this.file.name;
                 } else {
-                    icon.style.transform = 'rotate(90deg)'; // Panah ke bawah
+                    this.file = null;
+                    this.fileName = '';
                 }
-            });
+            },
+
+            async submitForm() {
+                try {
+                    const formData = new FormData();
+                    formData.append('module_title', this.formData.module_title);
+                    formData.append('content', this.formData.content);
+                    formData.append('course_id', this.formData.course_id);
+                    if (this.file) {
+                        formData.append('file_path', this.file);
+                    }
+
+                    const response = this.editingModule ?
+                        await axios.post(`/module/${this.editingModule.id}`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                            method: 'POST',
+                        }) :
+                        await axios.post('{{ route("module.store") }}', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                        });
+
+                    alert(this.editingModule ? 'Module updated successfully' :
+                        'Module created successfully');
+                    window.location.reload();
+                } catch (error) {
+                    console.error(error);
+                    alert('An error occurred');
+                }
+            },
+        }));
+    });
+    document.querySelectorAll('.accordion-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const target = document.querySelector(this.getAttribute('data-target'));
+            const icon = this.querySelector('.accordion-icon');
+
+            // Toggle visibility of the content
+            target.classList.toggle('hidden');
+
+            // Rotate the icon
+            if (target.classList.contains('hidden')) {
+                icon.style.transform = 'rotate(0deg)'; // Panah ke kanan
+            } else {
+                icon.style.transform = 'rotate(90deg)'; // Panah ke bawah
+            }
         });
-    </script>
+    });
+</script>
 @endsection
