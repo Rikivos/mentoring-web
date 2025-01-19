@@ -20,7 +20,9 @@ class TaskController extends Controller
             'module_id' => 'required|exists:modules,module_id',
         ]);
 
-        $filePath = $request->file('file')->store('tasks');
+        $filePath = $request->hasFile('file')
+            ? $request->file('file')->store('tasks')
+            : null;
 
         $task = Task::create([
             'file' => $filePath,
