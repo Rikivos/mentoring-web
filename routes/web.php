@@ -90,6 +90,7 @@ Route::prefix('mentor')->group(function () {
     Route::post('/module/store', [MentorController::class, 'store'])->name('module.store');
     Route::post('/module/{id}', [MentorController::class, 'update'])->name('module.update');
     Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
+    Route::post('/attendance/{id}', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
 });
 
 //announcement
