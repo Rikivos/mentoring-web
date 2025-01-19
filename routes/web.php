@@ -38,6 +38,20 @@ Route::get('/mycourse/participant/{slug}', [MyCourseController::class, 'showPart
 Route::get('/enroll/{slug}', [CourseController::class, 'view'])->name('enroll');;
 Route::post('/enroll/{slug}')->name('enroll.post');
 
+//Task
+Route::get('/task', function () {
+    return view('mentee.task');
+})->middleware('auth')->name('task');
+
+Route::get('/task-submission', function () {
+    return view('mentee.taskSubmit');
+})->middleware('auth')->name('taskSubmit');
+
+//Presence
+Route::get('/presence', function () {
+    return view('mentee.presence');
+})->middleware('auth')->name('presence');
+
 //logbook
 
 
