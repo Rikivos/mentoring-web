@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MyCourseMentorController extends Controller
 {
@@ -36,5 +37,35 @@ class MyCourseMentorController extends Controller
         ]);
 
         return response()->json(['message' => 'Module successfully created.', 'data' => $module], 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'module_title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'file_path' => 'nullable|file',
+        ]);
+
+        $module = Module::findOrFail($id);
+
+        $module->module_title = $validatedData['module_title'];
+        $module->content = $validatedData['content'];
+
+        if ($request->hasFile('file')) {
+            if ($module->file_path) {
+                Storage::delete($module->file_path);
+            }
+
+            $path = $request->file('file')->store('modules');
+            $module->file_path = $path;
+        }
+
+        $module->save();
+
+        return response()->json([
+            'message' => 'Module updated successfully!',
+            'module' => $module,
+        ], 200);
     }
 }

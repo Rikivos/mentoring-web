@@ -88,6 +88,7 @@ Route::prefix('mentor')->group(function () {
     Route::post('/logbook', [LogbookController::class, 'add'])->name('logbook.add');
     Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
     Route::post('/module/store', [MyCourseMentorController::class, 'store'])->name('module.store');
+    Route::post('/module/{id}', [MyCourseMentorController::class, 'update'])->name('module.update');
 });
 
 
