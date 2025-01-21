@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\MyCourse;
+namespace App\Http\Controllers\Mentee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;

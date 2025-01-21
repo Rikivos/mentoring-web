@@ -48,4 +48,9 @@ class Course extends Model
     {
         return $this->hasMany(Report::class, 'course_id');
     }
+
+    public function modules()
+    {
+        return $this->hasMany(Module::class, 'course_id', 'course_id');
+    }
 }

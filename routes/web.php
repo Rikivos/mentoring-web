@@ -5,7 +5,8 @@ use App\Http\Controllers\Admin\DataCourseController as AdminDataCourseController
 use App\Http\Controllers\Admin\AnnouncementController as AnnouncementController;
 use App\Http\Controllers\Admin\DashboardAdminController as DashboardAdminController;
 use App\Http\Controllers\Home\HomeController as HomeController;
-use App\Http\Controllers\MyCourse\MyCourseController as MyCourseController;
+use App\Http\Controllers\Mentee\MyCourseController as MyCourseController;
+use App\Http\Controllers\Mentee\AttendanceController as MenteeAttendanceController;
 use App\Http\Controllers\Mentor\MentorController as MentorController;
 use App\Http\Controllers\Mentor\AttendanceController as AttendanceController;
 use App\Http\Controllers\Mentor\TaskController as TaskController;
@@ -52,13 +53,9 @@ Route::get('/task-submission', function () {
 Route::get('/presence', function () {
     return view('mentee.presence');
 })->middleware('auth')->name('presence');
-
-//logbook
-
-
+Route::post('/presence', [MenteeAttendanceController::class, 'store'])->name('presence.store');
 
 //Admin start
-
 //Admin mentor
 Route::get('/admin/mentor', [AdminDataMentorController::class, 'getMentor']);
 Route::post('/admin/mentor/add', [AdminDataMentorController::class, 'addMentor'])->name('addMentor');
