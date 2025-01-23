@@ -7,7 +7,7 @@ use App\Models\Report;
 use App\Models\User;
 use App\Models\Course;
 use Illuminate\Http\Request;
-
+use Carbon\Carbon;
 
 class LogbookController extends Controller
 {
@@ -16,6 +16,12 @@ class LogbookController extends Controller
     {
         $courses = Course::with('reports')->get();
 
+        $courses->each(function ($course) {
+            $course->reports->each(function ($report) {
+                $report->start_time = Carbon::parse($report->start_time)->format('H:i');
+                $report->end_time = Carbon::parse($report->end_time)->format('H:i');
+            });
+        });
         return view('admin.report', compact('courses'));
     }
 
