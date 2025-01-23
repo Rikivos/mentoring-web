@@ -11,11 +11,16 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+
         $courses = Course::with(['mentor', 'users' => function ($query) {
             $query->where('role', 'mente');
         }])
+            ->when($search, function ($query, $search) {
+                $query->where('course_title', 'like', '%' . $search . '%');
+            })
             ->get()
             ->map(function ($course) {
                 return [
@@ -26,8 +31,9 @@ class AttendanceController extends Controller
                 ];
             });
 
-        return view('admin.attendance', compact('courses'));
+        return view('admin.attendance', compact('courses', 'search'));
     }
+
 
     public function generateRecapPDF($id)
     {
