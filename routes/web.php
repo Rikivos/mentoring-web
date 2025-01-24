@@ -55,6 +55,7 @@ Route::get('/presence', function () {
 })->middleware('auth')->name('presence');
 Route::post('/presence', [MenteeAttendanceController::class, 'store'])->name('presence.store');
 
+//admin
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/dashboard/{id}/download-pdf', [DashboardAdminController::class, 'downloadPdf'])->name('admin.dashboard.download-pdf');
@@ -83,16 +84,20 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 //mentor
 Route::prefix('mentor')->group(function () {
     Route::get('/mentoring/{slug}', [MentorController::class, 'index'])->name('mentor.mentoring');
-    Route::get('/home',  [HomeController::class, 'index'])->name('courses.index');
+
     Route::post('/logbook', [LogbookController::class, 'add'])->name('logbook.add');
     Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
+
     Route::post('/module/store', [MentorController::class, 'store'])->name('module.store');
     Route::post('/module/{id}', [MentorController::class, 'update'])->name('module.update');
+
     Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
     Route::post('/attendance/{id}', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
+
     Route::post('/task', [TaskController::class, 'store'])->name('task.store');
     Route::post('/task/{id}', [TaskController::class, 'update'])->name('task.update');
 });
+
 
 //announcement
 Route::post('/upload-announcement', [AnnouncementController::class, 'upload']);
