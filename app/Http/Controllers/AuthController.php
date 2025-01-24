@@ -18,34 +18,25 @@ class AuthController extends Controller
     // Proses login
     public function login(Request $request)
     {
-        // Validasi input login
         $request->validate([
             'nim' => 'required|nim',
             'password' => 'required',
         ]);
 
-        // Coba autentikasi pengguna
         if (Auth::attempt($request->only('nim', 'password'))) {
-            // Regenerasi session untuk keamanan
             $request->session()->regenerate();
 
-            // Ambil role pengguna setelah login
             $role = Auth::user()->role;
 
-            // Simpan role dalam session
             session(['role' => $role]);
 
-            if ($role === 'mente') {
-                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
-            }
-            if ($role === 'mentor') {
-                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
-            } else {
+            if ($role === 'petugas') {
                 return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
+            } else {
+                return redirect()->route('dashboard')->with('success', 'Login berhasil!');
             }
         }
 
-        // Jika login gagal, kembalikan ke halaman login dengan pesan error
         return back()->withErrors([
             'nim' => 'NIM atau password salah.',
         ]);
@@ -58,7 +49,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Menghapus role dari session setelah logout
         session()->forget('role');
 
         return redirect('/login')->with('success', 'Logout berhasil!');
