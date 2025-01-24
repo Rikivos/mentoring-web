@@ -14,6 +14,12 @@ class LogbookController extends Controller
     //get all logbook
     public function index()
     {
+        $role = session('role');
+
+        if ($role !== 'petugas') {
+            return redirect()->route('dashboard');
+        }
+
         $courses = Course::with('reports')->get();
 
         $courses->each(function ($course) {

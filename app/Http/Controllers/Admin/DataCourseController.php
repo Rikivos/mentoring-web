@@ -13,10 +13,14 @@ class DataCourseController extends Controller
     //get all Course
     public function getAllCourse()
     {
-        //mentors
+        $role = session('role');
+
+        if ($role !== 'petugas') {
+            return redirect()->route('dashboard');
+        }
+
         $mentors = User::where('role', 'mentor')->with('courses')->get();
 
-        //Course
         $courses = Course::with(['mentor'])
             ->withCount('users')
             ->get();

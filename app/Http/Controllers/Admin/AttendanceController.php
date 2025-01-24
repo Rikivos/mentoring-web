@@ -13,6 +13,12 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
+        $role = session('role');
+
+        if ($role !== 'petugas') {
+            return redirect()->route('dashboard');
+        }
+
         $search = $request->input('search');
 
         $courses = Course::with(['mentor', 'users' => function ($query) {

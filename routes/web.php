@@ -55,29 +55,30 @@ Route::get('/presence', function () {
 })->middleware('auth')->name('presence');
 Route::post('/presence', [MenteeAttendanceController::class, 'store'])->name('presence.store');
 
-//Admin start
-//Admin mentor
-Route::get('/admin/mentor', [AdminDataMentorController::class, 'getMentor']);
-Route::post('/admin/mentor/add', [AdminDataMentorController::class, 'addMentor'])->name('addMentor');
-Route::post('/admin/mentor/edit-role', [AdminDataMentorController::class, 'editMentorRole'])->name('admin.mentor.editRole');
-Route::post('/admin/mentor/destroy', [AdminDataMentorController::class, 'destroyMentor']);
-
-//Admin course
-Route::post('/admin/course/add', [AdminDataCourseController::class, 'storeCourse'])->name('store.course');
-Route::post('/admin/course/update/{id}', [AdminDataCourseController::class, 'updateCourse']);
-Route::delete('/admin/course/delete/{id}', [AdminDataCourseController::class, 'destroyCourse']);
-
-Route::prefix('admin')->group(function () {
-    Route::get('/dashboard', [DashboardAdminController::class, 'index'], 'admin.dashboard')->name('admin.dashboard');
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/dashboard/{id}/download-pdf', [DashboardAdminController::class, 'downloadPdf'])->name('admin.dashboard.download-pdf');
-    Route::get('/mentor', [AdminDataMentorController::class, 'getMentor'])->name('admin.mentor');
-    Route::get('/class', [AdminDataCourseController::class, 'getAllCourse'])->name('admin.class');
-    Route::get('/attendance', [AdminAttendanceController::class, 'index'])->name('admin.attendance');
-    Route::get('/attendance/pdf/{id}', [AdminAttendanceController::class, 'generateRecapPDF'])->name('admin.attendance.pdf');
-    Route::get('/report', [AdminLogbookController::class, 'index'])->name('admin.report');
-    Route::post('/report/{id}/update', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
+    Route::prefix('mentor')->group(function () {
+        Route::get('/', [AdminDataMentorController::class, 'getMentor'])->name('admin.mentor');
+        Route::post('/add', [AdminDataMentorController::class, 'addMentor'])->name('addMentor');
+        Route::post('/edit-role', [AdminDataMentorController::class, 'editMentorRole'])->name('admin.mentor.editRole');
+        Route::post('/destroy', [AdminDataMentorController::class, 'destroyMentor']);
+    });
+    Route::prefix('course')->group(function () {
+        Route::get('/', [AdminDataCourseController::class, 'getAllCourse'])->name('admin.class');
+        Route::post('/add', [AdminDataCourseController::class, 'storeCourse'])->name('store.course');
+        Route::post('/update/{id}', [AdminDataCourseController::class, 'updateCourse']);
+        Route::delete('/delete/{id}', [AdminDataCourseController::class, 'destroyCourse']);
+    });
+    Route::prefix('attendance')->group(function () {
+        Route::get('/', [AdminAttendanceController::class, 'index'])->name('admin.attendance');
+        Route::get('/pdf/{id}', [AdminAttendanceController::class, 'generateRecapPDF'])->name('admin.attendance.pdf');
+    });
+    Route::prefix('report')->group(function () {
+        Route::get('/', [AdminLogbookController::class, 'index'])->name('admin.report');
+        Route::post('/{id}/update', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
+    });
 });
-//end admin
 
 //mentor
 Route::prefix('mentor')->group(function () {

@@ -14,6 +14,12 @@ class DataMentorController extends Controller
     //get all mentors
     public function getMentor(Request $request)
     {
+        $role = session('role');
+
+        if ($role !== 'petugas') {
+            return redirect()->route('dashboard');
+        }
+
         $search = $request->input('search');
 
         $mentors = User::where('role', 'mentor')
