@@ -72,9 +72,18 @@
                         Silakan unduh dokumen kontrak perkuliahan dan materi Pemahaman Dasar Kewirausahaan...!
                     </p>
                     <div class="mt-4">
+                        <a href="/presence" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/presence.svg" alt="PDF Icon" class="w-5 h-5">
+                            Presensi Kehadiran
+                        </a>
                         <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
-                            <img src="/images/pdf-icon.svg" alt="PDF Icon" class="w-5 h-5">
+                            <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
                             Tugas Sesi 1 - Kumpulkan tugas dalam bentuk PDF
+                        </a>
+
+                        <a href="#" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/file.svg" alt="PDF Icon" class="w-5 h-5">
+                            Tugas Sesi 1
                         </a>
                     </div>
                 </div>
