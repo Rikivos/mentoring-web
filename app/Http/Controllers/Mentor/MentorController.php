@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class MentorController extends Controller
 {
-    // Get all modules by course slug
+    // Details course
     public function index($slug)
     {
         $course = Course::where('course_slug', $slug)->firstOrFail();
-        $modules = Module::where('course_id', $course->course_id)->get();
+        $modules = Module::with(['tasks', 'attendances'])->where('course_id', $course->course_id)->get();
 
         return view('mentor.mentoring', compact('modules', 'course'));
     }

@@ -26,12 +26,16 @@
                         Tambah
                     </button>
                     <div class="relative">
-                        <input type="text" placeholder="Search" class="border rounded-md px-3 py-2 pl-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-5 h-5 absolute top-2.5 left-3 text-gray-500">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21 21l-4.35-4.35m1.35-6.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
-                        </svg>
+                        <form method="GET" action="{{ route('admin.mentor') }}" class="relative">
+                            <input type="text" name="search" placeholder="Cari mentor..." aria-label="Search"
+                                value="{{ $search ?? '' }}"
+                                class="border rounded-md px-3 py-2 pl-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-5 h-5 absolute top-2.5 left-3 text-gray-500">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-4.35-4.35m1.35-6.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+                            </svg>
+                        </form>
                     </div>
                 </div>
 

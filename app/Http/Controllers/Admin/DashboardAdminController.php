@@ -12,6 +12,12 @@ class DashboardAdminController extends Controller
 {
     public function index()
     {
+        $role = session('role');
+
+        if ($role !== 'petugas') {
+            return redirect()->route('dashboard');
+        }
+
         $totalClasses = Course::count();
         $totalMentees = User::where('role', 'mente')->count();
         $totalMentors = User::where('role', 'mentor')->count();

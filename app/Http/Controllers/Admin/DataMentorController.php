@@ -12,11 +12,24 @@ use Illuminate\Support\Str;
 class DataMentorController extends Controller
 {
     //get all mentors
-    public function getMentor()
+    public function getMentor(Request $request)
     {
-        $mentors = User::where('role', 'mentor')->with('courses')->get();
+        $role = session('role');
 
-        return view('admin.mentor', compact('mentors'));
+        if ($role !== 'petugas') {
+            return redirect()->route('dashboard');
+        }
+
+        $search = $request->input('search');
+
+        $mentors = User::where('role', 'mentor')
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->with('courses')
+            ->get();
+
+        return view('admin.mentor', compact('mentors', 'search'));
     }
 
     //add mentor

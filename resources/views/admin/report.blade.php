@@ -1,84 +1,100 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard - Kehadiran Mentoring')
+@section('title', 'Report')
 
 @section('content')
 <div class="flex bg-gray-200">
     <!-- Sidebar -->
     @include('components.sidebar')
 
-    <!-- Data Content -->
-    <main class="w-2/3 p-4 container mx-auto">
-        <!-- Section: Kehadiran Mentoring -->
-        <section class="bg-white shadow-md rounded-md p-4">
-            <header class="mb-4">
-                <h1 class="text-xl font-bold">Kehadiran Mentoring</h1>
-                <hr class="my-6 border-b border-gray-300">
-            </header>
-            
-            <!-- Tahun Akademik -->
-            <div class="flex justify-end items-center mb-4">
-                <label for="tahun" class="text-sm font-medium text-gray-700 mr-2">Tahun Akademik</label>
-                <div class="relative">
-                    <input id="tahun" type="number" name="tahun_akademik" aria-label="Tahun Akademik"
-                        class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                        value="2024" />
-                </div>
-            </div>
-            <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                Pilih
-            </button>
 
-            <!-- Keterangan -->
-            <div class="mt-4 mb-4">
-                <p class="text-md font-bold text-black">Keterangan</p>
-                <ul class="list-disc list-inside text-black">
-                    <li>Untuk melihat rekap presensi dalam bentuk file PDF</li>
-                </ul>
-            </div>
+    <!-- Dashboard Content -->
+    <div class="w-2/3 container mx-auto p-4">
+        <!-- Accordion Component -->
+        <div id="accordion-color" data-accordion="collapse"
+            data-active-classes="bg-blue-100 dark:bg-gray-800 text-blue-600 dark:text-white">
 
-            <!-- Pencarian -->
-            <div class="flex justify-end items-center mb-4">
-                <div class="relative">
-                    <input type="text" placeholder="Search" aria-label="Search"
-                        class="border rounded-md px-3 py-2 pl-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-5 h-5 absolute top-2.5 left-3 text-gray-500">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M21 21l-4.35-4.35m1.35-6.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+            <!-- Accordion Item -->
+            @foreach ($courses as $course)
+            <h2 id="accordion-color-heading-{{ $course->course_id }}">
+                <button type="button"
+                    class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-800 dark:border-gray-700 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-gray-800 gap-3"
+                    data-accordion-target="#accordion-color-body-{{ $course->course_id }}" aria-expanded="true"
+                    aria-controls="accordion-color-body-{{ $course->course_id }}">
+                    <span>{{ $course->course_title }}</span>
+                    <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5 5 1 1 5" />
                     </svg>
+                </button>
+            </h2>
+            <div id="accordion-color-body-{{ $course->course_id }}" class="hidden" aria-labelledby="accordion-color-heading-1">
+                <div class="bg-white p-6 container mx-auto space-y-6">
+                    @forelse ($course->reports as $report)
+                    <div class="flex overflow-hidden">
+                        <div class="w-1/2 p-4">
+                            <button id="openEdit"
+                                class="px-4 py-2 bg-yellow-500 text-white text-sm font-semibold rounded hover:bg-yellow-600">
+                                Edit
+                            </button>
+                            <img src="/images/logbook.svg" alt="Activity Image" class="w-full h-auto object-cover rounded mt-4">
+                        </div>
+                        <div class="w-2/3 p-6 mt-10">
+                            <div class="border border-gray-300 overflow-hidden bg-gray-200">
+                                <div class="grid grid-cols-3 gap-4 p-4 border-b border-gray-500">
+                                    <div class="col-span-1 text-gray-600 font-medium">Kegiatan</div>
+                                    <div class="col-span-2">{{ $report->report_name }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 p-4 border-b border-gray-500">
+                                    <div class="col-span-1 text-gray-600 font-medium">Tanggal</div>
+                                    <div class="col-span-2">{{ $report->upload_date }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 p-4 border-b border-gray-500">
+                                    <div class="col-span-1 text-gray-600 font-medium">Waktu</div>
+                                    <div class="col-span-2">{{ $report->start_time }} - {{ $report->end_time }}</div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 p-4 border-b border-gray-500">
+                                    <div class="col-span-1 text-gray-600 font-medium">Persetujuan</div>
+                                    <div class="col-span-2">
+                                        <span class="border-b border-gray-400 px-3 py-1 text-sm font-semibold rounded-full
+    @if ($report->status == 'approved') bg-green-100 text-green-600
+    @elseif ($report->status == 'rejected') bg-red-100 text-red-600
+    @else bg-yellow-100 text-yellow-600 @endif">
+                                            @if ($report->status == 'approved')
+                                            Disetujui
+                                            @elseif ($report->status == 'rejected')
+                                            Ditolak
+                                            @else
+                                            Proses
+                                            @endif
+                                        </span>
+
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 p-4">
+                                    <div class="col-span-1 text-gray-600 font-medium">Uraian Kegiatan</div>
+                                    <div class="col-span-2 text-gray-700">
+                                        {{ $report->description }}
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 p-4 border-t border-gray-500
+                                @if ($report->comment == '') hidden @endif">
+                                    <div class="col-span-1 text-gray-600 font-medium">komentar</div>
+                                    <div class="col-span-2 text-gray-700">
+                                        {{ $report->comment }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <p class="text-gray-500">No reports available for this course.</p>
+                    @endforelse
                 </div>
             </div>
-
-            <!-- Tabel Kehadiran -->
-            <div class="overflow-x-auto">
-                <table class="w-full table-auto border-collapse border border-gray-200">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="text-left p-2">Kelompok</th>
-                            <th class="text-left p-2">Jumlah Peserta</th>
-                            <th class="text-left p-2">Mentor</th>
-                            <th class="text-left p-2">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-left p-2">Kelompok A</td>
-                            <td class="text-left p-2">20</td>
-                            <td class="text-left p-2">Budi</td>
-                            <td class="text-left p-2">
-                                <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                    aria-label="Download Data">
-                                    Download
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+            @endforeach
+        </div>
+    </div>
 </div>
-<script>
-</script>
 @endsection

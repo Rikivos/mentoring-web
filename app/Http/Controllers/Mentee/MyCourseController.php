@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\MyCourse;
+namespace App\Http\Controllers\Mentee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
@@ -37,7 +37,7 @@ class MyCourseController extends Controller
     public function showDetail($slug)
     {
         $course = Course::where('course_slug', $slug)->firstOrFail();
-        $modules = Module::where('course_id', $course->course_id)->get();
+        $modules = Module::with(['tasks', 'attendances'])->where('course_id', $course->course_id)->get();
 
         return view('mentee.mentoring', compact('course', 'modules'));
     }
