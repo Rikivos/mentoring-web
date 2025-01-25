@@ -26,12 +26,16 @@
                         Tambah
                     </button>
                     <div class="relative">
-                        <input type="text" placeholder="Search" class="border rounded-md px-3 py-2 pl-10">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-5 h-5 absolute top-2.5 left-3 text-gray-500">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21 21l-4.35-4.35m1.35-6.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
-                        </svg>
+                        <form method="GET" action="{{ route('admin.mentor') }}" class="relative">
+                            <input type="text" name="search" placeholder="Cari mentor..." aria-label="Search"
+                                value="{{ $search ?? '' }}"
+                                class="border rounded-md px-3 py-2 pl-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-5 h-5 absolute top-2.5 left-3 text-gray-500">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-4.35-4.35m1.35-6.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+                            </svg>
+                        </form>
                     </div>
                 </div>
 
@@ -88,45 +92,6 @@
                     </div>
                 </div>
 
-                <!-- Modal Edit Mentor -->
-                <div x-show="showEditMentor"
-                    class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" style="display: none;"
-                    x-transition>
-                    <div class="bg-white p-6 rounded shadow-md w-1/3">
-                        <h2 class="text-lg font-semibold mb-4">Edit Mentor</h2>
-                        <form action="{{ route('admin.mentor.editRole') }}" method="POST">
-                            @csrf
-                            <div class="mb-4">
-                                <label for="edit_mentor_nim" class="block text-sm font-medium text-gray-700">NIM
-                                    Mentor</label>
-                                <input type="text" id="edit_mentor_nim" name="nim" x-model="editMentor.nim"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                    placeholder="Masukkan NIM mentor" required />
-                            </div>
-                            <div class="mb-4">
-                                <label for="edit_mentor_role"
-                                    class="block text-sm font-medium text-gray-700">Role</label>
-                                <select id="edit_mentor_role" name="role" x-model="editMentor.role"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                    required>
-                                    <option value="mentor">Mentor</option>
-                                    <option value="mente">Mente</option>
-                                </select>
-                            </div>
-                            <div class="flex justify-end">
-                                <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded mr-2"
-                                    @click="showEditMentor = false">
-                                    Batal
-                                </button>
-                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-                                    Simpan
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-
                 <div class="mb-4">
                     @if (session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
@@ -160,10 +125,6 @@
                             <td class="p-2">{{ $mentor->name }}</td>
                             <td class="p-2">{{ $mentor->nim }}</td>
                             <td class="p-2">
-                                <button class="bg-blue-500 text-white px-4 py-2 rounded"
-                                    @click="showEditMentor = true; editMentor = { id: {{ $mentor->id }}, name: '{{ $mentor->name }}', nim: '{{ $mentor->nim }}', role: '{{ $mentor->role }}' }">
-                                    Edit
-                                </button>
                                 <button class="bg-red-500 text-white px-4 py-2 rounded"
                                     @click="deleteMentor({{ $mentor->nim }})">
                                     Hapus
