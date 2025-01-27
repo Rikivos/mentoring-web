@@ -50,10 +50,8 @@ Route::get('/task-submission', function () {
 })->middleware('auth')->name('taskSubmit');
 
 //Presence
-Route::get('/presence', function () {
-    return view('mentee.presence');
-})->middleware('auth')->name('presence');
-Route::post('/presence', [MenteeAttendanceController::class, 'store'])->name('presence.store');
+Route::get('/presence/{module_id}', [MenteeAttendanceController::class, 'showByModule'])->middleware('auth')->name('presence');
+Route::post('/presence/store', [MenteeAttendanceController::class, 'store'])->name('presence.store');
 
 //admin
 Route::prefix('admin')->middleware('auth')->group(function () {
