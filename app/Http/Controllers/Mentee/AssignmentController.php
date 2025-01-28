@@ -38,41 +38,34 @@ class AssignmentController extends Controller
 
         $assignment = Assignment::create($validatedData);
 
-        // return response()->json([
-        //     'message' => 'Assignment created successfully!',
-        //     'assignment' => $assignment,
-        // ], 201);
-
         return redirect()->route('mentee.task', ['task_id' => $task_id])->with('message', 'Assignment created successfully!');
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Request $request, $assignment_id)
     {
-        $assignment = Assignment::findOrFail($id);
-
         $validatedData = $request->validate([
-            'file' => 'sometimes|file|mimes:pdf,doc,docx,zip|max:2048',
-            'assignment_date' => 'sometimes|date',
-            'task_id' => 'sometimes|exists:tasks,task_id',
-            'user_id' => 'sometimes|exists:users,id',
+            'file' => 'required|file|mimes:pdf,doc,docx,zip|max:2048',
         ]);
 
-        if ($request->hasFile('file')) {
-            if ($assignment->file && Storage::disk('public')->exists($assignment->file)) {
-                Storage::disk('public')->delete($assignment->file);
-            }
+        $assignment = Assignment::findOrFail($assignment_id);
 
-            $path = $request->file('file')->store('assignments', 'public');
-            $validatedData['file'] = $path;
+        if (Storage::disk('public')->exists($assignment->file)) {
+            Storage::disk('public')->delete($assignment->file);
         }
 
-        $assignment->update($validatedData);
+        $file = $request->file('file');
+        $folderPath = 'assignments';
+        $filename = $file->getClientOriginalName();
+        $path = $file->storeAs($folderPath, $filename, 'public');
 
-        return response()->json([
-            'message' => 'Assignment updated successfully!',
-            'assignment' => $assignment,
-        ], 200);
+        $assignment->file = $path;
+        $assignment->assignment_date = now();
+        $assignment->save();
+
+        return redirect()->route('mentee.task', ['task_id' => $assignment->task_id])
+            ->with('message', 'Assignment updated successfully!');
     }
+
 
     public function getAssignmentByTaskAndUser($task_id)
     {
