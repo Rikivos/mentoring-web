@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardAdminController as DashboardAdminControl
 use App\Http\Controllers\Home\HomeController as HomeController;
 use App\Http\Controllers\Mentee\MyCourseController as MyCourseController;
 use App\Http\Controllers\Mentee\AttendanceController as MenteeAttendanceController;
+use App\Http\Controllers\Mentee\TaskController as MenteeTaskController;
 use App\Http\Controllers\Mentor\MentorController as MentorController;
 use App\Http\Controllers\Mentor\AttendanceController as AttendanceController;
 use App\Http\Controllers\Mentor\TaskController as TaskController;
@@ -41,10 +42,7 @@ Route::get('/enroll/{slug}', [CourseController::class, 'view'])->name('enroll');
 Route::post('/enroll/{slug}')->name('enroll.post');
 
 //Task
-Route::get('/task', function () {
-    return view('mentee.task');
-})->middleware('auth')->name('task');
-
+Route::get('/task/{task_id}', [MenteeTaskController::class, 'show'])->middleware('auth')->name('mentee.task');
 Route::get('/task-submission', function () {
     return view('mentee.taskSubmit');
 })->middleware('auth')->name('taskSubmit');

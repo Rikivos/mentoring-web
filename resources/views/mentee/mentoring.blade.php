@@ -58,14 +58,14 @@
 
                         @foreach ($module->tasks as $task)
                         @if (!empty($task->file))
-                        <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        <a href="#" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
                             download tugas
                         </a>
                         @endif
 
                         @if (!empty($task))
-                        <a href="" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        <a href="{{ route('mentee.task', ['task_id' => $task->task_id]) }}" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/file.svg" alt="PDF Icon" class="w-5 h-5">
                             {{ $task->description }}
                         </a>
