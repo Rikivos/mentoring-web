@@ -32,12 +32,16 @@ class TaskController extends Controller
                 if ($submissionTime->lessThan($deadline)) {
                     $timeDifference = $submissionTime->diff($deadline);
                     $timeRemaining = 'Submitted ' . "{$timeDifference->d} days {$timeDifference->h} hours {$timeDifference->i} minutes early";
-                    $lastModified = Carbon::parse($submission->updated_at)->format('l, d F Y, g:i A');
+                    $lastModified = Carbon::parse($submission->updated_at)
+                        ->setTimezone('Asia/Jakarta')
+                        ->format('l, d F Y, g:i A');
                     $file = $submission->file;
                 } else {
                     $timeDifference = $deadline->diff($submissionTime);
                     $timeRemaining = 'Submitted ' . "{$timeDifference->d} days {$timeDifference->h} hours {$timeDifference->i} minutes late";
-                    $lastModified = Carbon::parse($submission->updated_at)->format('l, d F Y, g:i A');
+                    $lastModified = Carbon::parse($submission->updated_at)
+                        ->setTimezone('Asia/Jakarta')
+                        ->format('l, d F Y, g:i A');
                     $file = $submission->file;
                 }
                 $submissionStatus = 'Submitted for grading';

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DataCourseController as AdminDataCourseController
 use App\Http\Controllers\Admin\AnnouncementController as AnnouncementController;
 use App\Http\Controllers\Admin\DashboardAdminController as DashboardAdminController;
 use App\Http\Controllers\Home\HomeController as HomeController;
+use App\Http\Controllers\Mentee\AssignmentController as AssignmentController;
 use App\Http\Controllers\Mentee\MyCourseController as MyCourseController;
 use App\Http\Controllers\Mentee\AttendanceController as MenteeAttendanceController;
 use App\Http\Controllers\Mentee\TaskController as MenteeTaskController;
@@ -43,9 +44,8 @@ Route::post('/enroll/{slug}')->name('enroll.post');
 
 //Task
 Route::get('/task/{task_id}', [MenteeTaskController::class, 'show'])->middleware('auth')->name('mentee.task');
-Route::get('/task-submission', function () {
-    return view('mentee.taskSubmit');
-})->middleware('auth')->name('taskSubmit');
+Route::get('/task-submission/{task_id}', [AssignmentController::class, 'getAssignmentByTaskAndUser'])->middleware('auth')->name('taskSubmit');
+Route::post('/task-submission/store/{task_id}', [AssignmentController::class, 'store'])->middleware('auth')->name('taskSubmit.store');
 
 //Presence
 Route::get('/presence/{module_id}', [MenteeAttendanceController::class, 'showByModule'])->middleware('auth')->name('presence');
