@@ -13,7 +13,6 @@
             <p class="text-sm text-gray-700">
                 <strong>Opened:</strong> {{$opened}} <br>
                 <strong>Due:</strong> {{ \Carbon\Carbon::parse($task->deadline)->setTimezone('Asia/Jakarta')->format('l, d F Y, g:i A') }}
-
             </p>
         </div>
 
