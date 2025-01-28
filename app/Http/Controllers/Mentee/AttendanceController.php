@@ -7,9 +7,44 @@ use Illuminate\Http\Request;
 use App\Models\AttendanceUser;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
+    public function showByModule($module_id)
+    {
+        try {
+            $attendance = Attendance::with(['module', 'attendanceUsers'])
+                ->where('module_id', $module_id)
+                ->first();
+
+            if (!$attendance) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Attendance not found for the given module ID',
+                ], 404);
+            }
+
+            $user = Auth::user();
+
+            $userAttendance = $attendance->attendanceUsers->firstWhere('user_id', $user->id);
+            $status = $userAttendance->status ?? null;
+
+            // Format attendance_open and deadline
+            $formattedDate = \Carbon\Carbon::parse($attendance->attendance_open)->format('D, d F Y');
+            $formattedTime = \Carbon\Carbon::parse($attendance->attendance_open)->format('g:i A') . ' - ' .
+                \Carbon\Carbon::parse($attendance->deadline)->format('g:i A');
+            $attendanceDetails = $formattedDate . "\n" . $formattedTime;
+
+            return view('mentee.presence', compact('attendance', 'status', 'attendanceDetails'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         $request->validate([

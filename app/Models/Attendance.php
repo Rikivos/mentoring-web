@@ -30,4 +30,9 @@ class Attendance extends Model
     {
         return $this->belongsTo(Module::class, 'module_id', 'module_id');
     }
+
+    public function attendanceUsers()
+    {
+        return $this->hasMany(AttendanceUser::class, 'attendance_id', 'attendance_id');
+    }
 }

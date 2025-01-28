@@ -13,6 +13,7 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'module_id' => 'required|exists:modules,module_id',
+            'title' => 'required|string',
             'attendance_open' => 'required|date',
             'deadline' => 'required|date|after:attendance_open',
         ]);
@@ -28,6 +29,7 @@ class AttendanceController extends Controller
         try {
             $attendance = Attendance::create([
                 'module_id' => $request->module_id,
+                'title' => $request->title,
                 'attendance_open' => $request->attendance_open,
                 'deadline' => $request->deadline,
             ]);
