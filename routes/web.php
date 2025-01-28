@@ -46,9 +46,9 @@ Route::post('/enroll/{slug}')->name('enroll.post');
 Route::get('/task/{task_id}', [MenteeTaskController::class, 'show'])->middleware('auth')->name('mentee.task');
 Route::get('/task-submission/{task_id}', [AssignmentController::class, 'getAssignmentByTaskAndUser'])->middleware('auth')->name('taskSubmit');
 Route::post('/task-submission/store/{task_id}', [AssignmentController::class, 'store'])->middleware('auth')->name('taskSubmit.store');
-Route::post('/task-submission/update/{assignment_id}', [AssignmentController::class, 'edit'])
-    ->middleware('auth')
-    ->name('assignment.update');
+Route::post('/task-submission/update/{assignment_id}', [AssignmentController::class, 'edit'])->middleware('auth')->name('assignment.update');
+Route::get('/assignment/download/{assigment_id}', [MenteeTaskController::class, 'download'])->middleware('auth')->name('assignment.download');
+
 
 //Presence
 Route::get('/presence/{module_id}', [MenteeAttendanceController::class, 'showByModule'])->middleware('auth')->name('presence');
