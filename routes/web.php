@@ -59,6 +59,9 @@ Route::post('/presence', [MenteeAttendanceController::class, 'store'])->name('pr
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/dashboard/{id}/download-pdf', [DashboardAdminController::class, 'downloadPdf'])->name('admin.dashboard.download-pdf');
+    Route::get('/announcement', function () {
+        return view('admin.announcement');
+    })->middleware('auth')->name('admin.announcement');
     Route::prefix('mentor')->group(function () {
         Route::get('/', [AdminDataMentorController::class, 'getMentor'])->name('admin.mentor');
         Route::post('/add', [AdminDataMentorController::class, 'addMentor'])->name('addMentor');
