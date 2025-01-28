@@ -86,6 +86,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 //mentor
 Route::prefix('mentor')->group(function () {
     Route::get('/mentoring/{slug}', [MentorController::class, 'index'])->name('mentor.mentoring');
+    Route::get('/mentoring/participant/{slug}', [MyCourseController::class, 'showParticipant'])->name('mentor.mentoring.participant');
 
     Route::post('/logbook', [LogbookController::class, 'add'])->name('logbook.add');
     Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
