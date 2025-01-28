@@ -59,19 +59,8 @@ class TaskController extends Controller
 
             $gradingStatus = 'Not graded';
 
-            // return response()->json([
-            //     $task,
-            //     $opened,
-            //     $deadline,
-            //     $submissionStatus,
-            //     $gradingStatus,
-            //     $timeRemaining,
-            //     $lastModified
-            // ]);
-
             return view('mentee.task', compact('task', 'opened', 'deadline', 'submissionStatus', 'gradingStatus', 'timeRemaining', 'lastModified', 'file'));
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
