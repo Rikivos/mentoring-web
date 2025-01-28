@@ -83,13 +83,39 @@
             <div id="module{{ $key }}" class="accordion-collapse hidden">
                 <div class="accordion-body p-4">
                     <p>{{ $module->content }}</p>
-                    @if (!empty($module->file_path))
-                    <a href="{{ $module->module_file_url }}"
-                        class="text-blue-500 hover:underline flex items-center gap-2">
-                        <img src="/images/pdf-icon.svg" alt="PDF Icon" class="w-5 h-5">
-                        Download Module
-                    </a>
-                    @endif
+                    <div class="mt-4">
+                        @foreach ($module->attendances as $attendance)
+                        @if(!empty($attendance))
+                        <a href="/presence" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/presence.svg" alt="PDF Icon" class="w-5 h-5">
+                            Presensi Kehadiran
+                        </a>
+                        @endif
+                        @endforeach
+
+                        @if (!empty($module->file_path))
+                        <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
+                            download module
+                        </a>
+                        @endif
+
+                        @foreach ($module->tasks as $task)
+                        @if (!empty($task->file))
+                        <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
+                            download tugas
+                        </a>
+                        @endif
+
+                        @if (!empty($task))
+                        <a href="#" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/file.svg" alt="PDF Icon" class="w-5 h-5">
+                            {{ $task->description }}
+                        </a>
+                        @endif
+                        @endforeach
+                    </div>
                     <button
                         @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
                         class="save-button mt-2 bg-blue-500 text-white py-1 px-4 rounded">
