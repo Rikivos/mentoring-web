@@ -50,9 +50,9 @@
                         @endforeach
 
                         @if (!empty($module->file_path))
-                        <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        <a href="{{ route('module.downloadByFileName', $module->file_path) }}" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
-                            download module
+                            {{ $module->file_path }}
                         </a>
                         @endif
 
