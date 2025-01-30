@@ -51,6 +51,10 @@ class CourseController extends Controller
             'course_id' => $course->course_id,
         ]);
 
-        return redirect()->route('courses.show', $slug)->with('message', 'Successfully enrolled in the course!');
+        if ($user->role === 'mente') {
+            return redirect()->route('courses.show', $slug)->with('message', 'Successfully enrolled in the course!');
+        } else {
+            return redirect()->route('mentor.mentoring', $slug)->with('message', 'Successfully enrolled in the course!');
+        }
     }
 }

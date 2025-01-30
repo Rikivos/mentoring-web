@@ -19,97 +19,63 @@
         <div class="flex justify-end items-center mb-4">
             <button id="expandAllBtn" class="text-blue-500 hover:underline">Expand all</button>
         </div>
-        <!-- General Section -->
-        <div class="accordion-item outline outline-2 outline-gray-200 rounded-lg mb-6">
-            <h2 class="accordion-header">
-                <button class="accordion-button w-full text-left bg-white p-4 flex items-center focus:outline-none"
-                    type="button" data-target="#general">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="31" viewBox="0 0 30 31"
-                        fill="none" class="accordion-icon transition-transform duration-300">
-                        <circle cx="15" cy="15.5" r="14" stroke="black" stroke-width="1.5" />
-                        <path d="M11 6 L19 15.5 L11 25" stroke="black" stroke-width="1.875" stroke-linecap="round"
-                            stroke-linejoin="round" class="arrow-path" />
-                    </svg>
-                    <span class="text-lg font-semibold ml-2">General</span>
-                </button>
-            </h2>
-            <div id="general" class="accordion-collapse hidden">
-                <div class="accordion-body p-4">
-                    <p>Konten sesi 2 akan ditambahkan di sini.</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Sesi 1 -->
+        @foreach ($modules as $key => $module)
         <div class="accordion-item outline-2 outline outline-gray-200 rounded-lg mb-6">
             <h2 class="accordion-header">
                 <button class="accordion-button w-full text-left bg-white p-4 flex items-center focus:outline-none"
-                    type="button" data-target="#sesi1">
+                    type="button" data-target="#module{{ $key }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="31" viewBox="0 0 30 31"
                         fill="none" class="accordion-icon transition-transform duration-300">
                         <circle cx="15" cy="15.5" r="14" stroke="black" stroke-width="1.5" />
                         <path d="M11 6 L19 15.5 L11 25" stroke="black" stroke-width="1.875" stroke-linecap="round"
                             stroke-linejoin="round" class="arrow-path" />
                     </svg>
-                    <span class="text-lg font-semibold ml-2">Sesi 1</span>
+                    <span class="text-lg font-semibold ml-2">{{ $module->module_title }}</span>
                 </button>
             </h2>
-            <div id="sesi1" class="accordion-collapse hidden">
+            <div id="module{{ $key }}" class="accordion-collapse hidden">
                 <div class="accordion-body p-4">
                     <p class="mb-4">
-                        Assalamu'alaikum Wr. Wb.<br>
-                        Salam sehat dan bahagia selalu...<br><br>
-                        Mata kuliah Kewirausahaan Berbasis Program Studi pertemuan pertama akan membahas kontrak
-                        perkuliahan dan Pemahaman Dasar Kewirausahaan.
-                    </p>
-                    <p class="mb-4">
-                        Pada pertemuan ini juga akan membahas Teori dan Konsep Kewirausahaan: Definisi, karakteristik
-                        wirausahawan, dan peran kewirausahaan dalam perekonomian, Sejarah dan Perkembangan
-                        Kewirausahaan: Evolusi kewirausahaan dalam industri teknologi, Tren Kewirausahaan Teknologi:
-                        Studi kasus startup teknologi di Indonesia dan global.
-                    </p>
-                    <p class="mb-4">
-                        Silakan unduh dokumen kontrak perkuliahan dan materi Pemahaman Dasar Kewirausahaan...!
+                        {{ $module->content }}
                     </p>
                     <div class="mt-4">
-                        <a href="/presence" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        @foreach ($module->attendances as $attendance)
+                        @if(!empty($attendance))
+                        <a href="{{ route('presence', ['module_id' => $module->module_id]) }}" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/presence.svg" alt="PDF Icon" class="w-5 h-5">
                             Presensi Kehadiran
                         </a>
+                        @endif
+                        @endforeach
+
+                        @if (!empty($module->file_path))
                         <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
-                            Tugas Sesi 1 - Kumpulkan tugas dalam bentuk PDF
+                            download module
                         </a>
+                        @endif
 
+                        @foreach ($module->tasks as $task)
+                        @if (!empty($task->file))
                         <a href="#" class="flex items-center gap-2 text-blue-500 hover:underline">
-                            <img src="/images/file.svg" alt="PDF Icon" class="w-5 h-5">
-                            Tugas Sesi 1
+                            <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
+                            download tugas
                         </a>
+                        @endif
+
+                        @if (!empty($task))
+                        <a href="{{ route('mentee.task', ['task_id' => $task->task_id]) }}" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/file.svg" alt="PDF Icon" class="w-5 h-5">
+                            {{ $task->description }}
+                        </a>
+                        @endif
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Sesi 2 -->
-        <div class="accordion-item outline-2 outline outline-gray-200 rounded-lg mb-6">
-            <h2 class="accordion-header">
-                <button class="accordion-button w-full text-left bg-white p-4 flex items-center focus:outline-none"
-                    type="button" data-target="#sesi2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="31" viewBox="0 0 30 31"
-                        fill="none" class="accordion-icon transition-transform duration-300">
-                        <circle cx="15" cy="15.5" r="14" stroke="black" stroke-width="1.5" />
-                        <path d="M11 6 L19 15.5 L11 25" stroke="black" stroke-width="1.875" stroke-linecap="round"
-                            stroke-linejoin="round" class="arrow-path" />
-                    </svg>
-                    <span class="text-lg font-semibold ml-2">Sesi 2</span>
-                </button>
-            </h2>
-            <div id="sesi2" class="accordion-collapse hidden">
-                <div class="accordion-body p-4">
-                    <p>Konten sesi 2 akan ditambahkan di sini.</p>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 </div>
 

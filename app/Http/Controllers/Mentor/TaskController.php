@@ -15,6 +15,7 @@ class TaskController extends Controller
     {
         $validatedData = $request->validate([
             'file' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'title' => 'nullable|string',
             'description' => 'required|string',
             'deadline' => 'required|date|after:now',
             'module_id' => 'required|exists:modules,module_id',
@@ -25,6 +26,7 @@ class TaskController extends Controller
             : null;
 
         $task = Task::create([
+            'tiitle' => $validatedData['title'],
             'file' => $filePath,
             'description' => $validatedData['description'],
             'deadline' => $validatedData['deadline'],
@@ -41,12 +43,17 @@ class TaskController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
+            'title' => 'nullable|string',
             'file' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'description' => 'nullable|string',
             'deadline' => 'nullable|date|after:now',
         ]);
 
         $task = Task::findOrFail($id);
+
+        if ($request->has('title')) {
+            $task->title = $validatedData['title'];
+        }
 
         if ($request->has('description')) {
             $task->description = $validatedData['description'];
