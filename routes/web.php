@@ -42,6 +42,9 @@ Route::get('/mycourse/participant/{slug}', [MyCourseController::class, 'showPart
 Route::get('/enroll/{slug}', [CourseController::class, 'view'])->name('enroll');;
 Route::post('/enroll/{slug}')->name('enroll.post');
 
+//module
+Route::get('/module/download/{fileName}', [MentorController::class, 'downloadByFileName'])->name('module.downloadByFileName');
+
 //Task
 Route::get('/task/{task_id}', [MenteeTaskController::class, 'show'])->middleware('auth')->name('mentee.task');
 Route::get('/task-submission/{task_id}', [AssignmentController::class, 'getAssignmentByTaskAndUser'])->middleware('auth')->name('taskSubmit');
