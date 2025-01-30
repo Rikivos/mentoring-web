@@ -3,7 +3,7 @@
 @section('content')
 <div class="bg-blue-600 text-white">
     <div class="container mx-auto flex justify-center items-center py-4 px-6">
-        <a href="/mentor/mentoring" class="text-lg font-bold mx-4 underline">Mentoring</a>
+        <a href="{{route('mentor.mentoring', $course->course_slug)}}" class="text-lg font-bold mx-4 underline">Mentoring</a>
         <a href="{{ route('mentor.mentoring.participant', $course->course_slug)}}" class="text-lg font-bold mx-4">Participants</a>
     </div>
 </div>
