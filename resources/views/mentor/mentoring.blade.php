@@ -1,12 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="bg-blue-600 text-white">
-        <div class="container mx-auto flex justify-center items-center py-4 px-6">
-            <a href="/mentor/mentoring" class="text-lg font-bold mx-4 underline">Mentoring</a>
-            <a href="{{ route('mentor.mentoring.participant', $course->course_slug) }}"
-                class="text-lg font-bold mx-4">Participants</a>
-        </div>
+<div class="bg-blue-600 text-white">
+    <div class="container mx-auto flex justify-center items-center py-4 px-6">
+        <a href="{{route('mentor.mentoring', $course->course_slug)}}" class="text-lg font-bold mx-4 underline">Mentoring</a>
+        <a href="{{ route('mentor.mentoring.participant', $course->course_slug)}}" class="text-lg font-bold mx-4">Participants</a>
+    </div>
+</div>
+
+<div class="container mx-auto p-4">
+    <div class="text-left mb-8">
+        <h1 class="text-3xl font-bold mb-4">Mentoring</h1>
     </div>
 
     <div class="container mx-auto p-4">
@@ -37,7 +41,7 @@
                                 class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                 required />
                         </div>
-
+                        
                         <!-- Description -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Description</label>
@@ -94,12 +98,12 @@
                                     @endif
                                 @endforeach
 
-                                @if (!empty($module->file_path))
-                                    <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
-                                        <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
-                                        download module
-                                    </a>
-                                @endif
+                               @if (!empty($module->file_path))
+                        <a href="{{ route('module.downloadByFileName', $module->file_path) }}" class="flex items-center gap-2 text-blue-500 hover:underline">
+                            <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
+                            {{ $module->file_path }}
+                        </a>
+                        @endif
 
                                 @foreach ($module->tasks as $task)
                                     @if (!empty($task->file))
