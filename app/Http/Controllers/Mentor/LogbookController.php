@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Mentor;
 
+use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseUser;
 use App\Models\Report;
@@ -17,7 +18,7 @@ class LogbookController extends Controller
     {
         $user = Auth::user();
 
-        if (empty($user)) {
+        if (!$user) {
             return redirect()->route('login');
         }
 
@@ -25,26 +26,16 @@ class LogbookController extends Controller
             return redirect()->route('notMentor');
         }
 
-        $enrollCheck = CourseUser::where('user_id', $user->id)->first();
-        if (empty($enrollCheck)) {
+        $course = Course::where('mentor_id', $user->id)->first();
+
+        if (!$course) {
             return view('mentor.emptyCourse');
         }
 
-        $courses = Course::where('mentor_id', $user->id)->first();
+        $reports = Report::where('course_id', $course->course_id)->get();
 
-        $reports = Report::where('user_id', $user->id)
-            ->where('course_id', $courses->course_id)
-            ->get();
-
-        $data = [
-            'mentor_id' => $user->id,
-            'course_id' => $courses->course_id,
-            'reports' => $reports
-        ];
-
-        return view('mentor.logbook', compact('data'));
+        return view('mentor.logbook', compact('course', 'reports'));
     }
-
 
     // Add logbook
     public function add(Request $request)
@@ -94,5 +85,14 @@ class LogbookController extends Controller
         $report->save();
 
         return redirect()->route('logbook.show')->with('success', 'Logbook berhasil ditambahkan');
+    }
+
+    // Delete logbook
+    public function deleteReport($id)
+    {
+        $report = Report::findOrFail($id);
+        $report->delete();
+
+        return redirect()->route('logbook.show')->with('success', 'Laporan berhasil dihapus.');
     }
 }

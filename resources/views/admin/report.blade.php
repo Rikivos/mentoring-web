@@ -38,7 +38,7 @@
                                 class="px-4 py-2 bg-yellow-500 text-white text-sm font-semibold rounded hover:bg-yellow-600">
                                 Edit
                             </button>
-                            <img src="/images/logbook.svg" alt="Activity Image" class="w-full h-auto object-cover rounded mt-4">
+                            <img src="{{ $report->report_photo ? asset('uploads/' . $report->report_photo) : '/images/logbook.svg' }}" alt="Activity Image" class="w-full h-auto object-cover rounded mt-4">
                         </div>
                         <div class="w-2/3 p-6 mt-10">
                             <div class="border border-gray-300 overflow-hidden bg-gray-200">
