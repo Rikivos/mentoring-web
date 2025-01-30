@@ -9,25 +9,82 @@ use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
+    // get announcement
+    public function index()
+    {
+        $announcements = Announcement::all();
+        return view('admin.announcement', compact('announcements'));
+    }
+
     //Add Announcement
     public function upload(Request $request)
     {
         $request->validate([
+            'title' => 'required|string|max:255',
             'announcement' => 'required|mimes:pdf|max:10240',
         ]);
 
         $file = $request->file('announcement');
-        $filePath = $file->store('announcements', 'public');
+        $originalFileName = $file->getClientOriginalName();
+
+        $storagePath = storage_path('app/public/announcements');
+        if (!file_exists($storagePath)) {
+            mkdir($storagePath, 0777, true);
+        }
+
+        $file->move($storagePath, $originalFileName);
 
         Announcement::create([
             'title' => $request->input('title'),
-            'file_path' => $filePath,
+            'file_path' => $originalFileName,
         ]);
 
-        return response()->json([
-            'message' => 'Announcement uploaded successfully!',
-            'file_path' => Storage::url($filePath),
-        ], 201);
+        return redirect()->back()->with('success', 'Announcement uploaded successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $announcement = Announcement::findOrFail($id);
+
+        $filePath = storage_path('app/public/announcements/' . $announcement->file_path);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        $announcement->delete();
+
+        return redirect()->back()->with('success', 'Announcement deleted successfully!');
+    }
+
+    // Method untuk update data announcement
+    public function update(Request $request, $id)
+    {
+        $announcement = Announcement::findOrFail($id);
+
+        $title = $request->input('title');
+        if ($title) {
+            $announcement->title = $title;
+        }
+
+        if ($request->hasFile('announcement')) {
+            if ($announcement->file_path && file_exists(storage_path('app/announcements/' . $announcement->file_path))) {
+                unlink(storage_path('app/announcements/' . $announcement->file_path));  // Menghapus file lama
+            }
+
+            $file = $request->file('announcement');
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->storeAs('announcements', $fileName);
+
+            $announcement->file_path = $fileName;
+        }
+
+        if (!$title && !$request->hasFile('announcement')) {
+            return redirect()->back()->with('warning', 'No changes detected.');
+        }
+
+        $announcement->save();
+
+        return redirect()->back()->with('success', 'Announcement updated successfully!');
     }
 
     public function download($fileName)
