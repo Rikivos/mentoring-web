@@ -26,6 +26,12 @@ class LogbookController extends Controller
             return redirect()->route('notMentor');
         }
 
+        $courseUsers = CourseUser::where('user_id', $user->id)->get();
+
+        if ($courseUsers->isEmpty()) {
+            return view('mentor.emptyCourse');
+        }
+
         $course = Course::where('mentor_id', $user->id)->first();
 
         if (!$course) {
