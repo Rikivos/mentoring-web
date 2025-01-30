@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Mentee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Task;
+use App\Models\Assignment;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Assignment;
 
 class TaskController extends Controller
 {
@@ -36,6 +37,7 @@ class TaskController extends Controller
                         ->setTimezone('Asia/Jakarta')
                         ->format('l, d F Y, g:i A');
                     $file = $submission->file;
+                    $submission_id = $submission->assignment_id;
                 } else {
                     $timeDifference = $deadline->diff($submissionTime);
                     $timeRemaining = 'Submitted ' . "{$timeDifference->d} days {$timeDifference->h} hours {$timeDifference->i} minutes late";
@@ -43,6 +45,7 @@ class TaskController extends Controller
                         ->setTimezone('Asia/Jakarta')
                         ->format('l, d F Y, g:i A');
                     $file = $submission->file;
+                    $submission_id = $submission->assignment_id;
                 }
                 $submissionStatus = 'Submitted for grading';
             } else {
@@ -51,11 +54,13 @@ class TaskController extends Controller
                     $timeRemaining = "Late by {$timeDifference->d} days {$timeDifference->h} hours {$timeDifference->i} minutes";
                     $lastModified = null;
                     $file = null;
+                    $submission_id = null;
                 } else {
                     $timeDifference = $now->diff(Carbon::parse($task->deadline));
                     $timeRemaining = "{$timeDifference->d} days {$timeDifference->h} hours {$timeDifference->i} minutes remaining";
                     $lastModified = null;
                     $file = null;
+                    $submission_id = null;
                 }
 
                 $submissionStatus = 'No submission has been made yet';
@@ -63,9 +68,31 @@ class TaskController extends Controller
 
             $gradingStatus = 'Not graded';
 
-            return view('mentee.task', compact('task', 'opened', 'deadline', 'submissionStatus', 'gradingStatus', 'timeRemaining', 'lastModified', 'file'));
+            // return response()->json([
+            //     $submission_id
+            // ]);
+
+            return view('mentee.task', compact('task', 'opened', 'deadline', 'submissionStatus', 'gradingStatus', 'timeRemaining', 'lastModified', 'file', 'submission_id'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+    public function download($assignment_id)
+    {
+        $assignment = Assignment::findOrFail($assignment_id);
+
+        $filePath = $assignment->file;
+
+        if (!Storage::disk('public')->exists($filePath)) {
+            return redirect()->back()->with('error', 'File not found!');
+        }
+
+        $fullPath = Storage::disk('public')->path($filePath);
+
+        if (file_exists($filePath)) {
+            return response()->download($filePath);
+        }
+        return response()->download($fullPath);
     }
 }

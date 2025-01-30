@@ -37,8 +37,16 @@
                 <tr>
                     <td class="p-4 border border-gray-200">{!! nl2br(e($attendanceDetails)) !!}</td>
                     <td class="p-4 border border-gray-200">Presensi Sesi 1</td>
-                    <td class="p-4 border border-gray-200 text-center">{{$status === null ? '?': $status}}</td>
-                    <td class="p-4 border border-gray-200 text-600">{{$status === null ? '<a href="" class="underline cursor-pointer">Submit attendance</a>' : 'Self-record'}}</td>
+                    <td class="p-4 border border-gray-200 {{ $status === null ? 'text-center' : 'text-left' }}">
+                        {{ $status === null ? '?' : $status }}
+                    </td>
+                    <td class="p-4 border border-gray-200 text-600">
+                        @if($status === null)
+                        <a href="#" class="underline cursor-pointer text-blue-600">Submit attendance</a>
+                        @else
+                        Self-record
+                        @endif
+                    </td>
                 </tr>
             </tbody>
         </table>

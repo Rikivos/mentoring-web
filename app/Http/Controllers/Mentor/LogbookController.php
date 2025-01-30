@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Mentor;
 
+use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseUser;
 use App\Models\Report;
@@ -17,7 +18,7 @@ class LogbookController extends Controller
     {
         $user = Auth::user();
 
-        if (empty($user)) {
+        if (!$user) {
             return redirect()->route('login');
         }
 
@@ -25,26 +26,22 @@ class LogbookController extends Controller
             return redirect()->route('notMentor');
         }
 
-        $enrollCheck = CourseUser::where('user_id', $user->id)->first();
-        if (empty($enrollCheck)) {
+        $courseUsers = CourseUser::where('user_id', $user->id)->get();
+
+        if ($courseUsers->isEmpty()) {
             return view('mentor.emptyCourse');
         }
 
-        $courses = Course::where('mentor_id', $user->id)->first();
+        $course = Course::where('mentor_id', $user->id)->first();
 
-        $reports = Report::where('user_id', $user->id)
-            ->where('course_id', $courses->course_id)
-            ->get();
+        if (!$course) {
+            return view('mentor.emptyCourse');
+        }
 
-        $data = [
-            'mentor_id' => $user->id,
-            'course_id' => $courses->course_id,
-            'reports' => $reports
-        ];
+        $reports = Report::where('course_id', $course->course_id)->get();
 
-        return view('mentor.logbook', compact('data'));
+        return view('mentor.logbook', compact('course', 'reports'));
     }
-
 
     // Add logbook
     public function add(Request $request)
@@ -77,13 +74,19 @@ class LogbookController extends Controller
             $image = str_replace('data:image/jpeg;base64,', '', $base64Image);
             $image = str_replace(' ', '+', $image);
             $imageName = time() . '.jpg';
-            File::put(public_path('uploads/') . $imageName, base64_decode($image));
-            $imagePath = 'uploads/' . $imageName;
+
+            $uploadPath = public_path('uploads');
+
+            if (!File::exists($uploadPath)) {
+                File::makeDirectory($uploadPath, 0755, true);
+            }
+
+            File::put($uploadPath . '/' . $imageName, base64_decode($image));
         }
 
         $report = new Report();
         $report->report_name = $request->input('report_name');
-        $report->report_photo = $imagePath;
+        $report->report_photo = $imageName;
         $report->description = $request->input('description');
         $report->start_time = $start_time;
         $report->end_time = $end_time;
@@ -94,5 +97,14 @@ class LogbookController extends Controller
         $report->save();
 
         return redirect()->route('logbook.show')->with('success', 'Logbook berhasil ditambahkan');
+    }
+
+    // Delete logbook
+    public function deleteReport($id)
+    {
+        $report = Report::findOrFail($id);
+        $report->delete();
+
+        return redirect()->route('logbook.show')->with('success', 'Laporan berhasil dihapus.');
     }
 }

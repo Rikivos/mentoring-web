@@ -11,12 +11,12 @@ use App\Http\Controllers\Mentee\AttendanceController as MenteeAttendanceControll
 use App\Http\Controllers\Mentee\TaskController as MenteeTaskController;
 use App\Http\Controllers\Mentor\MentorController as MentorController;
 use App\Http\Controllers\Mentor\AttendanceController as AttendanceController;
+use App\Http\Controllers\Mentor\LogbookController as MentorLogbookController;
 use App\Http\Controllers\Mentor\TaskController as TaskController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\LogbookController;
 use Illuminate\Support\Facades\Route;
 
 //home
@@ -46,6 +46,9 @@ Route::post('/enroll/{slug}')->name('enroll.post');
 Route::get('/task/{task_id}', [MenteeTaskController::class, 'show'])->middleware('auth')->name('mentee.task');
 Route::get('/task-submission/{task_id}', [AssignmentController::class, 'getAssignmentByTaskAndUser'])->middleware('auth')->name('taskSubmit');
 Route::post('/task-submission/store/{task_id}', [AssignmentController::class, 'store'])->middleware('auth')->name('taskSubmit.store');
+Route::post('/task-submission/update/{assignment_id}', [AssignmentController::class, 'edit'])->middleware('auth')->name('assignment.update');
+Route::get('/assignment/download/{assigment_id}', [MenteeTaskController::class, 'download'])->middleware('auth')->name('assignment.download');
+
 
 //Presence
 Route::get('/presence/{module_id}', [MenteeAttendanceController::class, 'showByModule'])->middleware('auth')->name('presence');
@@ -83,9 +86,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 //mentor
 Route::prefix('mentor')->group(function () {
     Route::get('/mentoring/{slug}', [MentorController::class, 'index'])->name('mentor.mentoring');
+    Route::get('/mentoring/participant/{slug}', [MyCourseController::class, 'showParticipant'])->name('mentor.mentoring.participant');
 
-    Route::post('/logbook', [LogbookController::class, 'add'])->name('logbook.add');
-    Route::get('/logbook', [LogbookController::class, 'indexByCourse'])->name('logbook.show');
+    Route::post('/logbook', [MentorLogbookController::class, 'add'])->name('logbook.add');
+    Route::get('/logbook', [MentorLogbookController::class, 'indexByCourse'])->name('logbook.show');
+    Route::delete('/logbook/destroy/{id}', [MentorLogbookController::class, 'deleteReport'])->name('mentor.report.delete');
 
     Route::post('/module/store', [MentorController::class, 'store'])->name('module.store');
     Route::post('/module/{id}', [MentorController::class, 'update'])->name('module.update');
