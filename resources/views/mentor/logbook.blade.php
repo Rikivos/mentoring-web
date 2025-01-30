@@ -43,7 +43,7 @@
                                 Hapus
                             </button>
                         </form>
-                        <img src="{{ $report->report_photo ? asset('storage/' . $report->report_photo) : '/images/logbook.svg' }}" alt="Activity Image"
+                        <img src="{{ $report->report_photo ? asset('uploads/' . $report->report_photo) : '/images/logbook.svg' }}" alt="Activity Image"
                             class="w-full h-auto object-cover rounded mt-4">
                     </div>
 
@@ -164,7 +164,7 @@
                 <button id="deleteScreenshotButton" type="button" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 mt-2">
                     Hapus Foto
                 </button>
-                <input type="hidden" id="screenshotImage" name="image">
+                <input type="hidden" id="image" name="image">
             </div>
             <!-- Buttons -->
             <div class="flex justify-end space-x-2">

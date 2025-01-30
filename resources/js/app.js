@@ -88,6 +88,7 @@ screenshotButton.onclick = () => {
     screenshotPreview.style.display = 'block';
 
     document.getElementById('screenshotImage').value = imageURL;
+    document.getElementById('image').value = imageURL;
 };
 
 

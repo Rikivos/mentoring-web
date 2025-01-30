@@ -74,13 +74,19 @@ class LogbookController extends Controller
             $image = str_replace('data:image/jpeg;base64,', '', $base64Image);
             $image = str_replace(' ', '+', $image);
             $imageName = time() . '.jpg';
-            File::put(public_path('uploads/') . $imageName, base64_decode($image));
-            $imagePath = 'uploads/' . $imageName;
+
+            $uploadPath = public_path('uploads');
+
+            if (!File::exists($uploadPath)) {
+                File::makeDirectory($uploadPath, 0755, true);
+            }
+
+            File::put($uploadPath . '/' . $imageName, base64_decode($image));
         }
 
         $report = new Report();
         $report->report_name = $request->input('report_name');
-        $report->report_photo = $imagePath;
+        $report->report_photo = $imageName;
         $report->description = $request->input('description');
         $report->start_time = $start_time;
         $report->end_time = $end_time;
