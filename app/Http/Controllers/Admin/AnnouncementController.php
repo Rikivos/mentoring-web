@@ -66,26 +66,11 @@ class AnnouncementController extends Controller
             $announcement->title = $title;
         }
 
-        if ($request->hasFile('announcement')) {
-            if ($announcement->file_path && file_exists(storage_path('app/announcements/' . $announcement->file_path))) {
-                unlink(storage_path('app/announcements/' . $announcement->file_path));  // Menghapus file lama
-            }
-
-            $file = $request->file('announcement');
-            $fileName = $file->getClientOriginalName();
-            $filePath = $file->storeAs('announcements', $fileName);
-
-            $announcement->file_path = $fileName;
-        }
-
-        if (!$title && !$request->hasFile('announcement')) {
-            return redirect()->back()->with('warning', 'No changes detected.');
-        }
-
         $announcement->save();
 
         return redirect()->back()->with('success', 'Announcement updated successfully!');
     }
+
 
     public function download($fileName)
     {

@@ -110,7 +110,7 @@ Route::prefix('mentor')->group(function () {
 
 //announcement
 Route::post('/upload-announcement', [AnnouncementController::class, 'upload']);
-Route::get('/download-announcement/{fileName}', [AnnouncementController::class, 'download']);
+Route::get('/download-announcement/{fileName}', [AnnouncementController::class, 'download'])->name('announcement.download');
 
 Route::get('/dashboard', function () {
     return view('mentee.dashboard');

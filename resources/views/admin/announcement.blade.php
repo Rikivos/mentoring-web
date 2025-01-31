@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="flex bg-gray-200" x-data="{ showAddModal: false, showEditModal: false }">
+<div class="flex bg-gray-200" x-data="{ showAddModal: false, showEditModal: false, selectedAnnouncement: {} }">
     <!-- Sidebar -->
     @include('components.sidebar')
 
@@ -71,7 +71,7 @@
                             </td>
                             <td class="p-2">{{ $announcement->title }}</td>
                             <td class="p-2">
-                                <button @click="showEditModal = true" class="bg-blue-500 text-white px-4 py-2 rounded">
+                                <button @click="showEditModal = true; selectedAnnouncement = @js($announcement)" class="bg-blue-500 text-white px-4 py-2 rounded">
                                     Edit
                                 </button>
                                 <form action="{{ route('announcement.delete', $announcement->id) }}" method="POST" class="inline">
@@ -89,7 +89,6 @@
                         </tr>
                         @endforelse
                     </tbody>
-
                 </table>
 
                 <!-- Modal Edit -->
@@ -97,15 +96,11 @@
                     style="display: none;" x-transition>
                     <div class="bg-white p-6 rounded shadow-md w-1/3">
                         <h2 class="text-lg font-semibold mb-4">Edit Data</h2>
-                        <form method="POST" action="{{ route('announcement.update', $announcement->id) }}" enctype="multipart/form-data">
+                        <form method="POST" :action="`{{ route('announcement.update', '') }}/${selectedAnnouncement.id}`" enctype="multipart/form-data">
                             @csrf
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">File</label>
-                                <input type="file" name="announcement">
-                            </div>
                             <div class="mb-4">
                                 <label for="edit_title" class="block text-sm font-medium text-gray-700">Judul Announcement</label>
-                                <input type="text" id="edit_title" name="title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Announcement">
+                                <input type="text" id="edit_title" name="title" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" x-bind:value="selectedAnnouncement.title" required>
                             </div>
                             <div class="flex justify-end">
                                 <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded mr-2" @click="showEditModal = false">
@@ -116,6 +111,7 @@
                                 </button>
                             </div>
                         </form>
+
                     </div>
                 </div>
 
