@@ -112,7 +112,7 @@
                         </div>
                     </div>
                     @empty
-                    <p class="text-gray-500">No reports available for this course.</p>
+                    <p class="text-gray-500">No reports available for this course..</p>
                     @endforelse
                 </div>
             </div>
