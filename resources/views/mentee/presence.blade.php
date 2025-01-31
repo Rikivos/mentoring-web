@@ -37,15 +37,14 @@
                 <tr>
                     <td class="p-4 border border-gray-200">{!! nl2br(e($attendanceDetails)) !!}</td>
                     <td class="p-4 border border-gray-200">Presensi Sesi 1</td>
-                    <td class="p-4 border border-gray-200 x-text="selectedStatus || '?'" {{ $status === null ? 'text-center' : 'text-left' }}">
-                        {{ $status === null ? '?' : $status }}
+                    <td class="p-4 border border-gray-200" :class="selectedStatus ? 'text-left' : 'text-center'" x-text="selectedStatus || '?'">
                     </td>
                     <td class="p-4 border border-gray-200 text-blue-600">
                         <template x-if="!selectedStatus">
-                            <a href="#" @click.prevent="showModal = true" class="underline cursor-pointer">Submit attendance</a>
+                            <a @click.prevent="showModal = true" class="underline cursor-pointer">Submit attendance</a>
                         </template>
                         <template x-if="selectedStatus">
-                            <span class="font-semibold" x-text="selectedStatus"></span>
+                            <span class="font-semibold text-black"> Self-record</span>
                         </template>
                     </td>
                 </tr>
