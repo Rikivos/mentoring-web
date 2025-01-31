@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AttendanceUser;
 use App\Models\Attendance;
+use App\Models\Course;
+use App\Models\CourseUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,22 +57,34 @@ class AttendanceController extends Controller
 
         $attendance = Attendance::find($request->attendance_id);
 
-        // Get the logged-in user's ID
-        // $userId = auth()->id();
-
-        // Cek user enrolled in the course
-        // $isEnrolled = $user->courses()->whereHas('modules.attendances', function ($query) use ($attendanceId) {
-        //     $query->where('attendance_id', $attendanceId);
-        // })->exists();
-
-        // if (!$isEnrolled) {
-        //     return response()->json(['message' => 'You are not enrolled in this course.'], 403);
-        // }
-
         if (!$attendance) {
             return response()->json([
                 'message' => 'Attendance record not found.',
             ], 404);
+        }
+
+        if (!$attendance->module) {
+            return response()->json([
+                'message' => 'Module not found for this attendance.',
+            ], 404);
+        }
+
+        $course = $attendance->module->course;
+
+        if (!$course) {
+            return response()->json([
+                'message' => 'Course not found for this module.',
+            ], 404);
+        }
+
+        $user = Auth::user();
+
+        $isEnrolled = CourseUser::where('user_id', $user->id)
+            ->where('course_id', $course->course_id)
+            ->exists();
+
+        if (!$isEnrolled) {
+            return response()->json(['message' => 'You are not enrolled in this course.'], 403);
         }
 
         if (Carbon::now()->gt($attendance->deadline)) {
@@ -85,9 +99,6 @@ class AttendanceController extends Controller
             'status' => $request->status,
         ]);
 
-        return response()->json([
-            'message' => 'Attendance user created successfully.',
-            'data' => $attendanceUser,
-        ], 201);
+        return redirect()->back()->with('success', 'Attendance created successfully.');
     }
 }

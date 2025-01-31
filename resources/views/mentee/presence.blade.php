@@ -37,15 +37,15 @@
                 <tr>
                     <td class="p-4 border border-gray-200">{!! nl2br(e($attendanceDetails)) !!}</td>
                     <td class="p-4 border border-gray-200">Presensi Sesi 1</td>
-                    <td class="p-4 border border-gray-200" :class="selectedStatus ? 'text-left' : 'text-center'" x-text="selectedStatus || '?'">
+                    <td class="p-4 border border-gray-200 capitalize {{ $status === null ? 'text-center' : 'text-left' }}">
+                        {{ $status === null ? '?' : $status }}
                     </td>
-                    <td class="p-4 border border-gray-200 text-blue-600">
-                        <template x-if="!selectedStatus">
-                            <a @click.prevent="showModal = true" class="underline cursor-pointer">Submit attendance</a>
-                        </template>
-                        <template x-if="selectedStatus">
-                            <span class="font-semibold text-black"> Self-record</span>
-                        </template>
+                    <td class="p-4 border border-gray-200 text-600">
+                        @if($status === null)
+                        <a @click.prevent="showModal = true" class="underline cursor-pointer text-blue-600">Submit attendance</a>
+                        @else
+                        Self-record
+                        @endif
                     </td>
                 </tr>
             </tbody>
@@ -61,24 +61,28 @@
         <div x-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" style="display: none;" x-transition>
             <div class="bg-white p-6 rounded shadow-md w-1/3">
                 <h2 class="text-lg font-semibold mb-4">Pilih Kehadiran</h2>
-                <div class="flex flex-col gap-2">
-                    <label class="flex items-center">
-                        <input type="radio" name="attendance" value="Hadir" x-model="tempStatus" class="mr-2"> Hadir
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="attendance" value="Izin" x-model="tempStatus" class="mr-2"> Izin
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="attendance" value="Terlambat" x-model="tempStatus" class="mr-2"> Terlambat
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="attendance" value="Tidak Hadir" x-model="tempStatus" class="mr-2"> Tidak Hadir
-                    </label>
-                </div>
-                <div class="flex justify-end mt-4">
-                    <button class="bg-gray-300 text-black px-4 py-2 rounded mr-2" @click="showModal = false">Batal</button>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded" @click="confirmAttendance">Simpan</button>
-                </div>
+                <form id="attendanceForm" method="POST" action="{{ route('presence.store') }}">
+                    @csrf
+                    <input type="hidden" name="attendance_id" value="{{ $attendance->attendance_id }}">
+                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+
+                    <div class="flex flex-col gap-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="status" value="hadir" x-model="tempStatus" class="mr-2"> Hadir
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="status" value="izin" x-model="tempStatus" class="mr-2"> Izin
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="status" value="tidak hadir" x-model="tempStatus" class="mr-2"> Tidak Hadir
+                        </label>
+                    </div>
+
+                    <div class="flex justify-end mt-4">
+                        <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded mr-2" @click="showModal = false">Batal</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -94,6 +98,11 @@
                 if (this.tempStatus) {
                     this.selectedStatus = this.tempStatus;
                     this.showModal = false;
+
+                    // Submit form secara otomatis
+                    setTimeout(() => {
+                        document.getElementById('attendanceForm').submit();
+                    }, 500);
                 }
             }
         };
