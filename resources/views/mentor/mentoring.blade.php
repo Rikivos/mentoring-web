@@ -71,7 +71,7 @@
                 </div>
             </div>
 
-            <!-- Existing Modules -->
+            <!-- Modules -->
             @foreach ($modules as $key => $module)
                 <div class="accordion-item outline-2 outline outline-gray-200 rounded-lg mb-6 relative">
                     <h2 class="accordion-header flex justify-between items-center p-4">
@@ -85,6 +85,31 @@
                             </svg>
                             <span class="text-lg font-semibold ml-2">{{ $module->module_title }}</span>
                         </button>
+
+                        <!-- Dropdown Menu modules -->
+                        <div x-data="{ openDropdown: null }" class="relative z-10">
+                            <button
+                                @click="openDropdown = openDropdown === {{ $key }} ? null : {{ $key }}"
+                                class="text-gray-600 hover:bg-gray-200 rounded-full p-2">
+                                ⋮
+                            </button>
+                            <div x-show="openDropdown === {{ $key }}" x-transition
+                                class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
+                                <button
+                                    @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
+                                    class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    Edit Modules
+                                </button>
+                                <button @click="isSubmissionModalOpen = true"
+                                    class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    Tambah Submission
+                                </button>
+                                <button @click="isAttendanceModalOpen = true"
+                                    class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    Tambah Attendance
+                                </button>
+                            </div>
+                        </div>
                     </h2>
                     <div id="module{{ $key }}" class="accordion-collapse hidden">
                         <div class="accordion-body p-4">
@@ -123,30 +148,6 @@
                                     @endif
                                 @endforeach
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Dropdown Menu modules -->
-                    <div x-data="{ openDropdown: null }" class="relative z-10">
-                        <button @click="openDropdown = openDropdown === {{ $key }} ? null : {{ $key }}"
-                            class="text-gray-600 hover:bg-gray-200 rounded-full p-2">
-                            ⋮
-                        </button>
-                        <div x-show="openDropdown === {{ $key }}" x-transition
-                            class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
-                            <button
-                                @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
-                                class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                Edit Modules
-                            </button>
-                            <button @click="isSubmissionModalOpen = true"
-                                class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                Tambah Submission
-                            </button>
-                            <button @click="isAttendanceModalOpen = true"
-                                class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                Tambah Attendance
-                            </button>
                         </div>
                     </div>
                     </h2>
@@ -408,7 +409,6 @@
                 }
             });
         });
-
         //script dropdown
     </script>
 @endsection
