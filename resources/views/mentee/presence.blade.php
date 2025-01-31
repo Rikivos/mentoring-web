@@ -8,7 +8,7 @@
     </div>
 
     <!-- Mentoring Section -->
-    <div class="bg-white shadow rounded-lg p-6 mb-8">
+    <div class="bg-white shadow rounded-lg p-6 mb-8" x-data="attendanceManager()">
         <!-- Navigation Tabs -->
         <div class="flex justify-between items-center border-b pb-4 mb-4">
             <div class="flex gap-4">
@@ -37,15 +37,16 @@
                 <tr>
                     <td class="p-4 border border-gray-200">{!! nl2br(e($attendanceDetails)) !!}</td>
                     <td class="p-4 border border-gray-200">Presensi Sesi 1</td>
-                    <td class="p-4 border border-gray-200 {{ $status === null ? 'text-center' : 'text-left' }}">
+                    <td class="p-4 border border-gray-200 x-text="selectedStatus || '?'" {{ $status === null ? 'text-center' : 'text-left' }}">
                         {{ $status === null ? '?' : $status }}
                     </td>
-                    <td class="p-4 border border-gray-200 text-600">
-                        @if($status === null)
-                        <a href="#" class="underline cursor-pointer text-blue-600">Submit attendance</a>
-                        @else
-                        Self-record
-                        @endif
+                    <td class="p-4 border border-gray-200 text-blue-600">
+                        <template x-if="!selectedStatus">
+                            <a href="#" @click.prevent="showModal = true" class="underline cursor-pointer">Submit attendance</a>
+                        </template>
+                        <template x-if="selectedStatus">
+                            <span class="font-semibold" x-text="selectedStatus"></span>
+                        </template>
                     </td>
                 </tr>
             </tbody>
@@ -56,8 +57,47 @@
             <p class="text-sm text-gray-700"><strong>Taken session:</strong> 0</p>
             <p class="text-sm text-gray-700"><strong>Percentage session:</strong> 0%</p>
         </div>
+
+        <!-- Modal Attendance Selection -->
+        <div x-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" style="display: none;" x-transition>
+            <div class="bg-white p-6 rounded shadow-md w-1/3">
+                <h2 class="text-lg font-semibold mb-4">Pilih Kehadiran</h2>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="attendance" value="Hadir" x-model="tempStatus" class="mr-2"> Hadir
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="attendance" value="Izin" x-model="tempStatus" class="mr-2"> Izin
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="attendance" value="Terlambat" x-model="tempStatus" class="mr-2"> Terlambat
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="attendance" value="Tidak Hadir" x-model="tempStatus" class="mr-2"> Tidak Hadir
+                    </label>
+                </div>
+                <div class="flex justify-end mt-4">
+                    <button class="bg-gray-300 text-black px-4 py-2 rounded mr-2" @click="showModal = false">Batal</button>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded" @click="confirmAttendance">Simpan</button>
+                </div>
+            </div>
+        </div>
     </div>
-
-
 </div>
+
+<script>
+    function attendanceManager() {
+        return {
+            showModal: false,
+            selectedStatus: null,
+            tempStatus: null,
+            confirmAttendance() {
+                if (this.tempStatus) {
+                    this.selectedStatus = this.tempStatus;
+                    this.showModal = false;
+                }
+            }
+        };
+    }
+</script>
 @endsection
