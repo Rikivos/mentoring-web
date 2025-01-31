@@ -84,7 +84,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     });
     Route::prefix('report')->group(function () {
         Route::get('/', [AdminLogbookController::class, 'index'])->name('admin.report');
-        Route::post('/{id}/update', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
+        Route::put('/update/{id}', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
     });
 });
 

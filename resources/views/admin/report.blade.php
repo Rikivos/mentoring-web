@@ -77,37 +77,56 @@
                                         {{ $report->description }}
                                     </div>
                                 </div>
-                                
-                                <!-- Form Edit -->
-                                <div class="editSection hidden">
-                                    <div class="grid grid-cols-3 gap-4 p-4 border-t border-gray-500">
-                                        <div class="col-span-1 text-gray-600 font-medium">Persetujuan</div>
-                                        <div class="col-span-2">
-                                            <label class="inline-flex items-center">
-                                                <input type="radio" name="approval_{{ $report->id }}" value="approved" class="form-radio text-green-500">
-                                                <span class="ml-2 text-green-600 font-medium">Disetujui</span>
-                                            </label>
-                                            <label class="inline-flex items-center ml-4">
-                                                <input type="radio" name="approval_{{ $report->id }}" value="rejected" class="form-radio text-red-500">
-                                                <span class="ml-2 text-red-600 font-medium">Ditolak</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-3 gap-4 p-4 border-t border-gray-500">
-                                        <div class="col-span-1 text-gray-600 font-medium">Komentar</div>
-                                        <div class="col-span-2">
-                                            <textarea class="commentField w-full border rounded p-2" rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-end space-x-2 mt-2">
-                                        <button class="saveButton px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded hover:bg-green-600">
-                                            Save changes
-                                        </button>
-                                        <button class="cancelButton px-4 py-2 bg-red-500 text-white text-sm font-semibold rounded hover:bg-red-600">
-                                            Cancel
-                                        </button>
+                                <div class="grid grid-cols-3 gap-4 p-4 border-t border-gray-500
+                                @if ($report->comment == '') hidden @endif">
+                                    <div class="col-span-1 text-gray-600 font-medium">komentar</div>
+                                    <div class="col-span-2 text-gray-700">
+                                        {{ $report->comment }}
                                     </div>
                                 </div>
+
+                                <!-- Form Edit -->
+                                <div class="editSection hidden">
+                                    <form action="{{ route('admin.update.report', $report->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <div class="grid grid-cols-3 gap-4 p-4 border-t border-gray-500">
+                                            <div class="col-span-1 text-gray-600 font-medium">Persetujuan</div>
+                                            <div class="col-span-2">
+                                                <label class="inline-flex items-center">
+                                                    <input type="radio" name="status" value="approved" class="form-radio text-green-500"
+                                                        {{ $report->status == 'approved' ? 'checked' : '' }}>
+                                                    <span class="ml-2 text-green-600 font-medium">Disetujui</span>
+                                                </label>
+                                                <label class="inline-flex items-center ml-4">
+                                                    <input type="radio" name="status" value="rejected" class="form-radio text-red-500"
+                                                        {{ $report->status == 'rejected' ? 'checked' : '' }}>
+                                                    <span class="ml-2 text-red-600 font-medium">Ditolak</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-3 gap-4 p-4 border-t border-gray-500">
+                                            <div class="col-span-1 text-gray-600 font-medium">Komentar</div>
+                                            <div class="col-span-2">
+                                                <textarea name="comment" class="commentField w-full border rounded p-2" rows="3">{{ $report->comment }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex justify-end space-x-2 mt-2">
+                                            <button type="submit"
+                                                class="saveButton px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded hover:bg-green-600">
+                                                Save changes
+                                            </button>
+                                            <button type="reset"
+                                                class="cancelButton px-4 py-2 bg-red-500 text-white text-sm font-semibold rounded hover:bg-red-600">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -122,33 +141,33 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.openEdit').forEach(button => {
-        button.addEventListener('click', function () {
-            const parentDiv = this.closest('.report-container');
-            parentDiv.querySelector('.editSection').classList.remove('hidden');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.openEdit').forEach(button => {
+            button.addEventListener('click', function() {
+                const parentDiv = this.closest('.report-container');
+                parentDiv.querySelector('.editSection').classList.remove('hidden');
+            });
+        });
+
+        document.querySelectorAll('.cancelButton').forEach(button => {
+            button.addEventListener('click', function() {
+                const parentDiv = this.closest('.report-container');
+                parentDiv.querySelector('.editSection').classList.add('hidden');
+            });
+        });
+
+        document.querySelectorAll('.saveButton').forEach(button => {
+            button.addEventListener('click', function() {
+                const parentDiv = this.closest('.report-container');
+                const approval = parentDiv.querySelector('input[type="radio"]:checked')?.value || '';
+                const comment = parentDiv.querySelector('.commentField').value;
+
+                console.log('Persetujuan:', approval);
+                console.log('Komentar:', comment);
+
+                parentDiv.querySelector('.editSection').classList.add('hidden');
+            });
         });
     });
-
-    document.querySelectorAll('.cancelButton').forEach(button => {
-        button.addEventListener('click', function () {
-            const parentDiv = this.closest('.report-container');
-            parentDiv.querySelector('.editSection').classList.add('hidden');
-        });
-    });
-
-    document.querySelectorAll('.saveButton').forEach(button => {
-        button.addEventListener('click', function () {
-            const parentDiv = this.closest('.report-container');
-            const approval = parentDiv.querySelector('input[type="radio"]:checked')?.value || '';
-            const comment = parentDiv.querySelector('.commentField').value;
-
-            console.log('Persetujuan:', approval);
-            console.log('Komentar:', comment);
-
-            parentDiv.querySelector('.editSection').classList.add('hidden');
-        });
-    });
-});
 </script>
 @endsection
