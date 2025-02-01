@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\Dashboard\DashboardController as DashboardController;
 use Illuminate\Support\Facades\Route;
 
 //home
@@ -61,9 +62,11 @@ Route::post('/presence/store', [MenteeAttendanceController::class, 'store'])->na
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/dashboard/{id}/download-pdf', [DashboardAdminController::class, 'downloadPdf'])->name('admin.dashboard.download-pdf');
-    Route::get('/announcement', function () {
-        return view('admin.announcement');
-    })->middleware('auth')->name('admin.announcement');
+
+    Route::get('/announcement', [AnnouncementController::class, 'index'])->middleware('auth')->name('admin.announcement');
+    Route::delete('/announcement/{id}', [AnnouncementController::class, 'destroy'])->name('announcement.delete');
+    Route::post('/announcement/update/{id}', [AnnouncementController::class, 'update'])->name('announcement.update');
+
     Route::prefix('mentor')->group(function () {
         Route::get('/', [AdminDataMentorController::class, 'getMentor'])->name('admin.mentor');
         Route::post('/add', [AdminDataMentorController::class, 'addMentor'])->name('addMentor');
@@ -82,7 +85,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     });
     Route::prefix('report')->group(function () {
         Route::get('/', [AdminLogbookController::class, 'index'])->name('admin.report');
-        Route::post('/{id}/update', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
+        Route::put('/update/{id}', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
     });
 });
 
@@ -108,11 +111,9 @@ Route::prefix('mentor')->group(function () {
 
 //announcement
 Route::post('/upload-announcement', [AnnouncementController::class, 'upload']);
-Route::get('/download-announcement/{fileName}', [AnnouncementController::class, 'download']);
+Route::get('/download-announcement/{fileName}', [AnnouncementController::class, 'download'])->name('announcement.download');
 
-Route::get('/dashboard', function () {
-    return view('mentee.dashboard');
-})->middleware('auth')->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
 Route::view('/not-mentor', 'mentee.notMentor')->name('notMentor');
 

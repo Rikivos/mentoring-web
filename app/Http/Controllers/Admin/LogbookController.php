@@ -48,9 +48,6 @@ class LogbookController extends Controller
         $report->comment = $request->input('comment', '');
         $report->save();
 
-        return response()->json([
-            'message' => 'Report updated successfully.',
-            'data' => $report,
-        ], 200);
+        return redirect()->back()->with('success', 'Report updated successfully.');
     }
 }

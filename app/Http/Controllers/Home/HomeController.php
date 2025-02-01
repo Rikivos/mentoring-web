@@ -13,7 +13,8 @@ class HomeController extends Controller
     public function index()
     {
         $courses = Course::with('mentor:id,name')->get();
-        return view('mentee.home', compact('courses'));
+        $announcements = Announcement::orderBy('created_at', 'desc')->get();
+        return view('mentee.home', compact('courses', 'announcements'));
     }
 
     // Method to search
