@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\Dashboard\DashboardController as DashboardController;
 use Illuminate\Support\Facades\Route;
 
 //home
@@ -112,9 +113,7 @@ Route::prefix('mentor')->group(function () {
 Route::post('/upload-announcement', [AnnouncementController::class, 'upload']);
 Route::get('/download-announcement/{fileName}', [AnnouncementController::class, 'download'])->name('announcement.download');
 
-Route::get('/dashboard', function () {
-    return view('mentee.dashboard');
-})->middleware('auth')->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
 Route::view('/not-mentor', 'mentee.notMentor')->name('notMentor');
 
