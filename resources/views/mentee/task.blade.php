@@ -17,11 +17,19 @@
         </div>
 
         <p class="mt-4 text-sm text-gray-700">{{$task->description}}</p>
-        <a href="{{ route('taskSubmit', $task->task_id) }}">
-            <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
-                Add Submission
+
+        <!-- Ubah tombol berdasarkan status submission -->
+        <form action="{{ $lastModified ? route('assignment.update', $submission_id) : route('taskSubmit', $task->task_id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="file" name="file" required class="hidden" id="fileInput">
+            
+            <button type="button" onclick="document.getElementById('fileInput').click()" 
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
+                {{ $lastModified ? 'Edit Submission' : 'Add Submission' }}
             </button>
-        </a>
+        
+            <button type="submit" id="submitButton" class="hidden"></button>
+        </form>
 
         <div class="mt-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Submission Status</h2>
@@ -60,6 +68,10 @@
             </table>
         </div>
     </div>
-
 </div>
+<script>
+    document.getElementById('fileInput').addEventListener('change', function() {
+        document.getElementById('submitButton').click();
+    });
+</script>
 @endsection
