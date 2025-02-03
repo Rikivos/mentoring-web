@@ -13,6 +13,7 @@ use App\Http\Controllers\Mentor\MentorController as MentorController;
 use App\Http\Controllers\Mentor\AttendanceController as AttendanceController;
 use App\Http\Controllers\Mentor\LogbookController as MentorLogbookController;
 use App\Http\Controllers\Mentor\TaskController as TaskController;
+use App\Http\Controllers\Mentor\SubmissionController as MentorSubmissionController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
@@ -106,6 +107,9 @@ Route::prefix('mentor')->group(function () {
 
     Route::post('/task', [TaskController::class, 'store'])->name('task.store');
     Route::post('/task/{id}', [TaskController::class, 'update'])->name('task.update');
+
+    Route::get('/submission/{task_id}', [MentorSubmissionController::class, 'index'])->name('submission.show');
+    Route::get('/submission/download/{assignment_id}', [MentorSubmissionController::class, 'download'])->name('submission.download');
 });
 
 
