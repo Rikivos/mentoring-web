@@ -12,10 +12,8 @@
 
 <div class="container mx-auto p-4 " x-data="{
         isSubmissionModalOpen: false,
-        isAttendanceModalOpen: false,
         showAddAttendance: false, 
         selectedModul: null
-
     }">
     <div class="text-left mb-8">
         <h1 class="text-3xl font-bold mb-4">Mentoring</h1>
@@ -101,11 +99,11 @@
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Edit Modules
                         </button>
-                        <button @click="isSubmissionModalOpen = true"
+                        <button @click="isSubmissionModalOpen = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Tambah Submission
                         </button>
-                        <button @click="showAddAttendance = true; selectedModul = @js($module); console.log(selectedModul)"
+                        <button @click="showAddAttendance = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Tambah Attendance
                         </button>
@@ -135,9 +133,9 @@
 
                         @foreach ($module->tasks as $task)
                         @if (!empty($task->file))
-                        <a href="/task" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        <a href="{{route('task.download', $task->task_id)}}" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
-                            download tugas
+                            {{ $task->file }}
                         </a>
                         @endif
 
@@ -156,7 +154,7 @@
         @endforeach
 
         <!-- Add/Edit Attendance Modal -->
-        <div x-show="showAddAttendance" x-transition.opacity x-cloak @keydown.window.escape="closeAttendanceModal"
+        <div x-show="showAddAttendance" x-transition.opacity x-cloak @keydown.window.escape="showAddAttendance = false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
             <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
@@ -200,18 +198,21 @@
         </div>
 
         <!-- Add/Edit Submission Modal -->
-        <div x-show="isSubmissionModalOpen" @keydown.window.escape="closeSubmissionModal"
+        <div x-show="isSubmissionModalOpen" @keydown.window.escape="isSubmissionModalOpen = false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
             <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
                 <h3 class="text-lg font-bold mb-4">Submission Types</h3>
-                <form @submit.prevent="submitSubmissionForm" class="space-y-4">
+                <form action="{{ route('task.store')}}" method="post" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+
+                    <input type="hidden" name="module_id" :value="selectedModul.module_id">
                     <!-- File Upload -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">File</label>
                         <div id="file-upload-area"
                             class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:border-blue-500">
-                            <input type="file" @change="handleFileChange" multiple>
+                            <input name="file" type="file" @change="handleFileChange">
                         </div>
                         <p x-text="fileName" class="mt-2 text-sm text-gray-500"></p>
                     </div>
@@ -219,39 +220,29 @@
                     <!-- Title -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Title</label>
-                        <input x-model="formData.submissions.title" type="text"
+                        <input name="title" require x-model="formData.submissions.title" type="text"
                             class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
                     <!-- Description -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea x-model="formData.submissions.description" rows="4"
+                        <textarea name="description" x-model="formData.submissions.description" rows="4"
                             class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
                     </div>
 
                     <!-- Date and Time -->
-                    <div class="mt-2 flex space-x-2">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Date</label>
-                            <input x-model="formData.attendance.date" type="date"
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Deadline</label>
+                        <div class="flex space-x-2">
+                            <input type="datetime-local" name="deadline" required x-model="formData.attendance.deadline"
                                 class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Time</label>
-                            <div class="flex space-x-2">
-                                <input x-model="formData.attendance.time_start" type="time"
-                                    class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                                <span class="self-center">to</span>
-                                <input x-model="formData.attendance.time_end" type="time"
-                                    class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                            </div>
                         </div>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex justify-end space-x-2">
-                        <button type="button" @click="closeSubmissionModal"
+                        <button type="button" @click="isSubmissionModalOpen = false"
                             class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
                         <button type="submit"
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
