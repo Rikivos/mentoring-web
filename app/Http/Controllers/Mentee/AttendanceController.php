@@ -58,23 +58,17 @@ class AttendanceController extends Controller
         $attendance = Attendance::find($request->attendance_id);
 
         if (!$attendance) {
-            return response()->json([
-                'message' => 'Attendance record not found.',
-            ], 404);
+            return redirect()->back()->with('error', 'Attendance record not found.');
         }
 
         if (!$attendance->module) {
-            return response()->json([
-                'message' => 'Module not found for this attendance.',
-            ], 404);
+            return redirect()->back()->with('error', 'Module not found for this attendance.');
         }
 
         $course = $attendance->module->course;
 
         if (!$course) {
-            return response()->json([
-                'message' => 'Course not found for this module.',
-            ], 404);
+            return redirect()->back()->with('error', 'Course not found for this module.');
         }
 
         $user = Auth::user();
@@ -84,13 +78,20 @@ class AttendanceController extends Controller
             ->exists();
 
         if (!$isEnrolled) {
-            return response()->json(['message' => 'You are not enrolled in this course.'], 403);
+            return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
-        if (Carbon::now()->gt($attendance->deadline)) {
-            return response()->json([
-                'message' => 'Cannot create attendance_user, the deadline has passed.',
-            ], 400);
+        $now = Carbon::now('Asia/Jakarta');
+        $deadline = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->deadline, 'Asia/Jakarta')->startOfSecond();
+
+        if ($now->gt($deadline)) {
+            $attendanceUser = AttendanceUser::create([
+                'attendance_id' => $request->attendance_id,
+                'user_id' => $request->user_id,
+                'status' => 'tidak hadir',
+            ]);
+
+            return redirect()->back()->with('success', 'Attendance deadline has passed.');
         }
 
         $attendanceUser = AttendanceUser::create([
