@@ -36,6 +36,7 @@
                 <div class="flex overflow-hidden ">
                     <!-- Image Section -->
                     <div class="w-1/2 p-4">
+                        @if ($report->status !== 'approved' && $report->status !== 'rejected')
                         <form action="{{ route('mentor.report.delete', $report->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini?')">
                             @csrf
                             @method('DELETE')
@@ -43,6 +44,7 @@
                                 Hapus
                             </button>
                         </form>
+                        @endif
                         <img src="{{ $report->report_photo ? asset('uploads/' . $report->report_photo) : '/images/logbook.svg' }}" alt="Activity Image"
                             class="w-full h-auto object-cover rounded mt-4">
                     </div>

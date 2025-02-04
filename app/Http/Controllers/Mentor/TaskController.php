@@ -13,30 +13,41 @@ class TaskController extends Controller
     //Add new task
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'file' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'title' => 'nullable|string',
-            'description' => 'required|string',
-            'deadline' => 'required|date|after:now',
-            'module_id' => 'required|exists:modules,module_id',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'file' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+                'title' => 'required|string',
+                'description' => 'nullable|string',
+                'deadline' => 'required|date|after:now',
+                'module_id' => 'required|exists:modules,module_id',
+            ]);
 
-        $filePath = $request->hasFile('file')
-            ? $request->file('file')->store('tasks')
-            : null;
+            $folderPath = 'tasks';
 
-        $task = Task::create([
-            'tiitle' => $validatedData['title'],
-            'file' => $filePath,
-            'description' => $validatedData['description'],
-            'deadline' => $validatedData['deadline'],
-            'module_id' => $validatedData['module_id'],
-        ]);
+            if (!Storage::disk('public')->exists($folderPath)) {
+                Storage::disk('public')->makeDirectory($folderPath);
+            }
 
-        return response()->json([
-            'message' => 'Task created successfully!',
-            'task' => $task,
-        ], 201);
+            $fileName = null;
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = $file->getClientOriginalName();
+
+                $file->storeAs($folderPath, $fileName, 'public');
+            };
+
+            $task = Task::create([
+                'title' => $validatedData['title'],
+                'file' => $fileName,
+                'description' => $validatedData['description'],
+                'deadline' => $validatedData['deadline'],
+                'module_id' => $validatedData['module_id'],
+            ]);
+
+            return redirect()->back()->with('success', 'Task created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     //Update task
@@ -78,5 +89,23 @@ class TaskController extends Controller
             'message' => 'Task updated successfully!',
             'task' => $task,
         ], 200);
+    }
+
+    public function download($task_id)
+    {
+        $assignment = Task::findOrFail($task_id);
+
+        $folderPath = 'tasks/';
+        $fileName = $assignment->file;
+        $filePath = $folderPath . $fileName;
+
+        if (!Storage::disk('public')->exists($filePath)) {
+            return redirect()->back()->with('error', 'File not found!');
+        }
+
+        $fullPath = Storage::disk('public')->path($filePath);
+
+        // Return the download response
+        return response()->download($fullPath);
     }
 }

@@ -24,6 +24,8 @@ class Task extends Model
     protected $fillable = [
         'file',
         'description',
+        'title',
+        'module_id',
         'deadline',
         'module_id',
     ];

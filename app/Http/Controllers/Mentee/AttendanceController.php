@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AttendanceUser;
 use App\Models\Attendance;
+use App\Models\Course;
+use App\Models\CourseUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,28 +57,41 @@ class AttendanceController extends Controller
 
         $attendance = Attendance::find($request->attendance_id);
 
-        // Get the logged-in user's ID
-        // $userId = auth()->id();
-
-        // Cek user enrolled in the course
-        // $isEnrolled = $user->courses()->whereHas('modules.attendances', function ($query) use ($attendanceId) {
-        //     $query->where('attendance_id', $attendanceId);
-        // })->exists();
-
-        // if (!$isEnrolled) {
-        //     return response()->json(['message' => 'You are not enrolled in this course.'], 403);
-        // }
-
         if (!$attendance) {
-            return response()->json([
-                'message' => 'Attendance record not found.',
-            ], 404);
+            return redirect()->back()->with('error', 'Attendance record not found.');
         }
 
-        if (Carbon::now()->gt($attendance->deadline)) {
-            return response()->json([
-                'message' => 'Cannot create attendance_user, the deadline has passed.',
-            ], 400);
+        if (!$attendance->module) {
+            return redirect()->back()->with('error', 'Module not found for this attendance.');
+        }
+
+        $course = $attendance->module->course;
+
+        if (!$course) {
+            return redirect()->back()->with('error', 'Course not found for this module.');
+        }
+
+        $user = Auth::user();
+
+        $isEnrolled = CourseUser::where('user_id', $user->id)
+            ->where('course_id', $course->course_id)
+            ->exists();
+
+        if (!$isEnrolled) {
+            return redirect()->back()->with('error', 'You are not enrolled in this course.');
+        }
+
+        $now = Carbon::now('Asia/Jakarta');
+        $deadline = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->deadline, 'Asia/Jakarta')->startOfSecond();
+
+        if ($now->gt($deadline)) {
+            $attendanceUser = AttendanceUser::create([
+                'attendance_id' => $request->attendance_id,
+                'user_id' => $request->user_id,
+                'status' => 'tidak hadir',
+            ]);
+
+            return redirect()->back()->with('success', 'Attendance deadline has passed.');
         }
 
         $attendanceUser = AttendanceUser::create([
@@ -85,9 +100,6 @@ class AttendanceController extends Controller
             'status' => $request->status,
         ]);
 
-        return response()->json([
-            'message' => 'Attendance user created successfully.',
-            'data' => $attendanceUser,
-        ], 201);
+        return redirect()->back()->with('success', 'Attendance created successfully.');
     }
 }

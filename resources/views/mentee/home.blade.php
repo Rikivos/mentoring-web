@@ -12,16 +12,17 @@
         <h2 class="text-xl font-semibold mb-4">Site Announcements</h2>
         <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200" x-data="announcementData()">
             <!-- Announcement Content -->
-            <template x-if="announcement && announcement.title">
-                <div class="flex items-center gap-4">
-                    <img src="/images/pdf.svg" alt="Announcement Icon" class="w-8 h-8">
-                    <p class="text-gray-600" x-text="announcement.title"></p>
-                </div>
-            </template>
-
-            <!-- If No Announcement -->
-            <div x-show="announcement === null" class="text-gray-500">
-                Belum ada pengumuman.
+            <div>
+                @forelse ($announcements as $announcement)
+                <a href="{{ route('announcement.download', $announcement->file_path) }}">
+                    <div class="flex items-center gap-4">
+                        <img src="/images/pdf.svg" alt="Announcement Icon" class="w-8 h-8">
+                        <p class="text-blue-600">{{$announcement->title}}</p>
+                    </div>
+                </a>
+                @empty
+                <p class="text-gray-500">Tidak ada pengumuman saat ini.</p>
+                @endforelse
             </div>
         </div>
         <div class="mt-8">
@@ -56,20 +57,4 @@
     </div>
     <!-- Group List Section -->
 </div>
-
-<script>
-    function announcementData() {
-        return {
-            announcement: null,
-            async fetchAnnouncement() {
-                const response = await fetch('/announcements');
-                const data = await response.json();
-                this.announcement = data.data ? data.data : null;
-            },
-            init() {
-                this.fetchAnnouncement();
-            }
-        };
-    }
-</script>
 @endsection

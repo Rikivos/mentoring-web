@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
 class MentorController extends Controller
@@ -29,11 +30,25 @@ class MentorController extends Controller
             'file_path' => 'nullable|file',
         ]);
 
+        $folderPath = 'modules';
+
+        if (!Storage::disk('public')->exists($folderPath)) {
+            Storage::disk('public')->makeDirectory($folderPath);
+        }
+
+        $fileName = null;
+        if ($request->hasFile('file_path')) {
+            $file = $request->file('file_path');
+            $fileName = $file->getClientOriginalName();
+
+            $file->storeAs($folderPath, $fileName, 'public');
+        }
+
         $module = Module::create([
             'module_title' => $request->module_title,
             'content' => $request->content,
             'course_id' => $request->course_id,
-            'file_path' => $request->file_path ? $request->file('file_path')->store('modules', 'public') : null,
+            'file_path' => $fileName,
         ]);
 
         return response()->json(['message' => 'Module successfully created.', 'data' => $module], 201);
@@ -67,5 +82,22 @@ class MentorController extends Controller
             'message' => 'Module updated successfully!',
             'module' => $module,
         ], 200);
+    }
+
+    public function downloadByFileName($fileName)
+    {
+        $module = Module::where('file_path', $fileName)->first();
+
+        if (!$module) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+
+        $fullFilePath = 'modules/' . $module->file_path;
+
+        if (Storage::disk('public')->exists($fullFilePath)) {
+            return Response::download(storage_path('app/public/' . $fullFilePath));
+        }
+
+        return response()->json(['error' => 'File not found'], 404);
     }
 }
