@@ -18,6 +18,7 @@ class Attendance extends Model
     // Kolom yang dapat diisi
     protected $fillable = [
         'module_id',
+        'title',
         'attendance_open',
         'deadline',
     ];
