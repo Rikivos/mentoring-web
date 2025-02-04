@@ -87,26 +87,40 @@
 
                 <!-- Dropdown Menu modules -->
                 <div x-data="{ openDropdown: null }" class="relative z-10">
-                    <button
-                        @click="openDropdown = openDropdown === {{ $key }} ? null : {{ $key }}"
+                    <button @click="openDropdown = openDropdown === {{ $key }} ? null : {{ $key }}"
                         class="text-gray-600 hover:bg-gray-200 rounded-full p-2">
                         ⋮
                     </button>
                     <div x-show="openDropdown === {{ $key }}" x-transition
                         class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
-                        <button
-                            @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
+                        <button @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Edit Modules
                         </button>
+
+                        @if ($module->tasks?->isEmpty())
                         <button @click="isSubmissionModalOpen = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Tambah Submission
                         </button>
+                        @else
+                        <button @click="isSubmissionModalOpen = true; selectedModul = @js($module);"
+                            class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Edit Submission
+                        </button>
+                        @endif
+
+                        @if ($module->attendances?->isEmpty())
                         <button @click="showAddAttendance = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Tambah Attendance
                         </button>
+                        @else
+                        <button @click="showAddAttendance = true; selectedModul = @js($module);"
+                            class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Edit Attendance
+                        </button>
+                        @endif
                     </div>
                 </div>
             </h2>
@@ -149,9 +163,9 @@
                     </div>
                 </div>
             </div>
-            </h2>
         </div>
         @endforeach
+
 
         <!-- Add/Edit Attendance Modal -->
         <div x-show="showAddAttendance" x-transition.opacity x-cloak @keydown.window.escape="showAddAttendance = false"
