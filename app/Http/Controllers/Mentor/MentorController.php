@@ -62,26 +62,37 @@ class MentorController extends Controller
             'file_path' => 'nullable|file',
         ]);
 
-        $module = Module::findOrFail($id);
+        try {
+            $module = Module::findOrFail($id);
 
-        $module->module_title = $validatedData['module_title'];
-        $module->content = $validatedData['content'];
+            $module->module_title = $validatedData['module_title'];
+            $module->content = $validatedData['content'];
 
-        if ($request->hasFile('file')) {
-            if ($module->file_path) {
-                Storage::delete($module->file_path);
+            if ($request->hasFile('file_path')) {
+                $folderPath = 'modules';
+
+                if (!Storage::disk('public')->exists($folderPath)) {
+                    Storage::disk('public')->makeDirectory($folderPath);
+                }
+
+                if ($module->file_path) {
+                    Storage::disk('public')->delete($folderPath . '/' . $module->file_path);
+                }
+
+                $file = $request->file('file_path');
+                $fileName = $file->getClientOriginalName();
+
+                $file->storeAs($folderPath, $fileName, 'public');
+
+                $module->file_path = $fileName;
             }
 
-            $path = $request->file('file')->store('modules');
-            $module->file_path = $path;
+            $module->save();
+
+            return redirect()->back()->with('success', 'Module updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
         }
-
-        $module->save();
-
-        return response()->json([
-            'message' => 'Module updated successfully!',
-            'module' => $module,
-        ], 200);
     }
 
     public function downloadByFileName($fileName)

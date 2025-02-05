@@ -12,8 +12,9 @@
 
 <div class="container mx-auto p-4 " x-data="{
         isSubmissionModalOpen: false,
+        showEditModule: false,
         showAddAttendance: false, 
-        selectedModul: null
+        selectedModul: null,
     }">
     <div class="text-left mb-8">
         <h1 class="text-3xl font-bold mb-4">Mentoring</h1>
@@ -93,7 +94,7 @@
                     </button>
                     <div x-show="openDropdown === {{ $key }}" x-transition
                         class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
-                        <button @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
+                        <button @click="showEditModule = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Edit Modules
                         </button>
@@ -167,7 +168,7 @@
         @endforeach
 
 
-        <!-- Add/Edit Attendance Modal -->
+        <!-- Add Attendance Modal -->
         <div x-show="showAddAttendance" x-transition.opacity x-cloak @keydown.window.escape="showAddAttendance = false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
@@ -211,7 +212,7 @@
             </div>
         </div>
 
-        <!-- Add/Edit Submission Modal -->
+        <!-- Add Submission Modal -->
         <div x-show="isSubmissionModalOpen" @keydown.window.escape="isSubmissionModalOpen = false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
@@ -267,24 +268,25 @@
 
 
         <!-- Edit Moduls -->
-        <div x-show="isModalOpen" @keydown.window.escape="closeEditModal"
+        <div x-show="showEditModule" x-transition.opacity @keydown.window.escape="showEditModule= false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
 
             <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
                 <h3 class="text-lg font-bold mb-4">Edit Module</h3>
-                <form @submit.prevent="submitForm" class="space-y-4">
+                <form class="space-y-4" :action="`{{ route('module.update', '') }}/${selectedModul.module_id}`" method="POST" enctype="multipart/form-data">
+                    @csrf
                     <!-- Module Title -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Module Title</label>
-                        <input x-model="formData.module_title" type="text"
+                        <input type="text" x-model="selectedModul.module_title" name="module_title"
                             class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                             required>
                     </div>
                     <!-- Description -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea x-model="formData.content" rows="4"
+                        <textarea rows="4" x-model="selectedModul.content" name="content"
                             class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
                     </div>
 
@@ -292,13 +294,13 @@
                         <label class="block text-sm font-medium text-gray-700">File</label>
                         <div id="file-upload-area"
                             class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:border-blue-500">
-                            <input type="file" @change="handleFileChange" multiple>
+                            <input name="file_path" type="file" @change="handleFileChange" multiple>
                         </div>
                         <p x-text="fileName" class="mt-2 text-sm text-gray-500"></p>
                     </div>
                     <!-- Action Buttons -->
                     <div class="flex justify-end space-x-2">
-                        <button type="button" @click="closeEditModal"
+                        <button type="button" @click="showEditModule = false"
                             class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
                         <button type="submit"
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
@@ -358,13 +360,7 @@
                         formData.append('file_path', this.file);
                     }
 
-                    const response = this.editingModule ?
-                        await axios.post(`/module/${this.editingModule.id}`, formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            },
-                            method: 'POST',
-                        }) :
+                    const response =
                         await axios.post("{{ route('module.store') }}", formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
