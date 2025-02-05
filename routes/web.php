@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController as DashboardController;
+use App\Models\Task;
 use Illuminate\Support\Facades\Route;
 
 //home
@@ -53,6 +54,7 @@ Route::get('/task-submission/{task_id}', [AssignmentController::class, 'getAssig
 Route::post('/task-submission/store/{task_id}', [AssignmentController::class, 'store'])->middleware('auth')->name('taskSubmit.store');
 Route::post('/task-submission/update/{assignment_id}', [AssignmentController::class, 'edit'])->middleware('auth')->name('assignment.update');
 Route::get('/assignment/download/{assigment_id}', [MenteeTaskController::class, 'download'])->middleware('auth')->name('assignment.download');
+Route::get('/task/donwload/{task_id}', [TaskController::class, 'download'])->middleware('auth')->name('task.download');
 
 
 //Presence

@@ -58,9 +58,9 @@
 
                         @foreach ($module->tasks as $task)
                         @if (!empty($task->file))
-                        <a href="#" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        <a href="{{route('task.download', $task->task_id)}}" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
-                            download tugas
+                            {{ $task->file }}
                         </a>
                         @endif
 
