@@ -12,6 +12,7 @@
 
 <div class="container mx-auto p-4 " x-data="{
         isSubmissionModalOpen: false,
+        showEditSubmission: false,
         showEditModule: false,
         showAddAttendance: false,
         showUpdateAttendance: false,
@@ -108,7 +109,7 @@
                             Tambah Submission
                         </button>
                         @else
-                        <button @click="isSubmissionModalOpen = true; selectedModul = @js($module);"
+                        <button @click="showEditSubmission = true; selectedModul = @js($module); console.log(selectedModul)"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Edit Submission
                         </button>
@@ -268,7 +269,8 @@
         </div>
         <!-- Attendance Modal -->
 
-        <!-- Add/Edit Submission Modal -->
+        <!--  Submission Modal -->
+        <!-- Add Submission Modal -->
         <div x-show="isSubmissionModalOpen" @keydown.window.escape="isSubmissionModalOpen = false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
@@ -324,6 +326,62 @@
             </div>
         </div>
 
+        <!-- Add/Edit Submission Modal -->
+        <div x-show="showEditSubmission" @keydown.window.escape="showEditSubmission = false"
+            class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="bg-black opacity-50 absolute inset-0"></div>
+            <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
+                <h3 class="text-lg font-bold mb-4">Submission Types</h3>
+                <form :action="`{{ route('task.store') }}/${selectedModul.tasks[0].task_id}`" method="post" enctype="multipart/form-data"
+                    class="space-y-4">
+                    @csrf
+
+                    <input type="hidden" name="module_id" :value="selectedModul.module_id">
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">File</label>
+                        <div id="file-upload-area"
+                            class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:border-blue-500">
+                            <input name="file" type="file" @change="handleFileChange">
+                        </div>
+                        <p x-text="fileName" class="mt-2 text-sm text-gray-500"></p>
+                    </div>
+
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Title</label>
+                        <input name="title" require x-model="selectedModul.tasks[0].title" type="text"
+                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea name="description" x-model="selectedModul.tasks[0].description" rows="4"
+                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    </div>
+
+                    <!-- Date and Time -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Deadline</label>
+                        <div class="flex space-x-2">
+                            <input type="datetime-local" name="deadline" required
+                                x-model="selectedModul.tasks[0].deadline.replace(' ', 'T').slice(0, 16)"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" @click="showEditSubmission = false"
+                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--  Submission Modal -->
 
         <!-- Edit Moduls -->
         <div x-show="showEditModule" x-transition.opacity @keydown.window.escape="showEditModule= false"
