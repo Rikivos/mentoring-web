@@ -17,7 +17,7 @@ class SubmissionController extends Controller
             if ($user->role == 'mentor') {
                 $assignments = Assignment::where('task_id', $task_id)->get();
 
-                return view('mentor.assignment', compact('assignments'));
+                return view('mentor.checkSubmission', compact('assignments'));
             } else {
                 return redirect()->route('notMentor');
             }
