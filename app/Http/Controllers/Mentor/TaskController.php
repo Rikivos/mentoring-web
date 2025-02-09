@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Mentor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,11 +37,13 @@ class TaskController extends Controller
                 $file->storeAs($folderPath, $fileName, 'public');
             };
 
+            $deadline = Carbon::parse($validatedData['deadline'])->format('Y-m-d H:i:s');
+
             $task = Task::create([
                 'title' => $validatedData['title'],
                 'file' => $fileName,
                 'description' => $validatedData['description'],
-                'deadline' => $validatedData['deadline'],
+                'deadline' => $deadline,
                 'module_id' => $validatedData['module_id'],
             ]);
 
@@ -62,33 +65,36 @@ class TaskController extends Controller
 
         $task = Task::findOrFail($id);
 
-        if ($request->has('title')) {
-            $task->title = $validatedData['title'];
+        if ($request->filled('deadline')) {
+            try {
+                $validatedData['deadline'] = Carbon::parse($request->deadline)->format('Y-m-d H:i:s');
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Invalid deadline format'], 422);
+            }
         }
 
-        if ($request->has('description')) {
-            $task->description = $validatedData['description'];
-        }
-
-        if ($request->has('deadline')) {
-            $task->deadline = $validatedData['deadline'];
-        }
+        $folderPath = 'tasks';
+        $fileName = $task->file;
 
         if ($request->hasFile('file')) {
-            if ($task->file) {
-                Storage::delete($task->file);
+            if ($task->file && Storage::disk('public')->exists("$folderPath/$task->file")) {
+                Storage::disk('public')->delete("$folderPath/$task->file");
             }
 
-            $filePath = $request->file('file')->store('tasks');
-            $task->file = $filePath;
+            $file = $request->file('file');
+            $fileName = $file->getClientOriginalName();
+
+            $file->storeAs($folderPath, $fileName, 'public');
         }
 
-        $task->save();
+        $task->update([
+            'title' => $validatedData['title'] ?? $task->title,
+            'file' => $fileName,
+            'description' => $validatedData['description'] ?? $task->description,
+            'deadline' => $validatedData['deadline'] ?? $task->deadline,
+        ]);
 
-        return response()->json([
-            'message' => 'Task updated successfully!',
-            'task' => $task,
-        ], 200);
+        return redirect()->back()->with('success', 'Task updated successfully!');
     }
 
     public function download($task_id)

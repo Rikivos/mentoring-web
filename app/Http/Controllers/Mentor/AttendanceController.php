@@ -45,43 +45,29 @@ class AttendanceController extends Controller
     public function updateAttendance(Request $request, $attendance_id)
     {
         $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
             'attendance_open' => 'required|date',
             'deadline' => 'required|date|after:attendance_open',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation errors',
-                'errors' => $validator->errors(),
-            ], 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         try {
             $attendance = Attendance::find($attendance_id);
 
             if (!$attendance) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Attendance not found',
-                ], 404);
+                return redirect()->back()->with('error', 'Attendance record not found');
             }
 
             $attendance->attendance_open = $request->attendance_open;
             $attendance->deadline = $request->deadline;
             $attendance->save();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Attendance updated successfully',
-                'data' => $attendance,
-            ], 200);
+            return redirect()->back()->with('success', 'Attendance updated successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while updating attendance',
-                'error' => $e->getMessage(),
-            ], 500);
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

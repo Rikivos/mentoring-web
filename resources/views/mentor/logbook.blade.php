@@ -58,11 +58,14 @@
                             </div>
                             <div class="grid grid-cols-3 gap-4 p-4 border-b border-gray-500">
                                 <div class="col-span-1 text-gray-600 font-medium">Tanggal</div>
-                                <div class="col-span-2">{{ $report->upload_date }}</div>
+                                <div class="col-span-2">{{ \Carbon\Carbon::parse($report->upload_date)->translatedFormat('j F Y') }}</div>
                             </div>
                             <div class="grid grid-cols-3 gap-4 p-4 border-b border-gray-500">
                                 <div class="col-span-1 text-gray-600 font-medium">Waktu</div>
-                                <div class="col-span-2">{{ $report->start_time }} - {{ $report->end_time }}</div>
+                                <div class="col-span-2">
+                                    {{ \Carbon\Carbon::parse($report->start_time)->format('H:i') }} WIB -
+                                    {{ \Carbon\Carbon::parse($report->end_time)->format('H:i') }} WIB
+                                </div>
                             </div>
                             <div class="grid grid-cols-3 gap-4 p-4 border-b border-gray-500">
                                 <div class="col-span-1 text-gray-600 font-medium">Persetujuan</div>

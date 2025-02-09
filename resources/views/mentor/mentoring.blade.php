@@ -12,7 +12,10 @@
 
 <div class="container mx-auto p-4 " x-data="{
         isSubmissionModalOpen: false,
-        showAddAttendance: false, 
+        showEditSubmission: false,
+        showEditModule: false,
+        showAddAttendance: false,
+        showUpdateAttendance: false,
         selectedModul: null
     }">
     <div class="text-left mb-8">
@@ -90,28 +93,47 @@
                     <button
                         @click="openDropdown = openDropdown === {{ $key }} ? null : {{ $key }}"
                         class="text-gray-600 hover:bg-gray-200 rounded-full p-2">
-                        ⋮
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M20 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6h-2m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4"/>
+                        </svg>
+                          
                     </button>
                     <div x-show="openDropdown === {{ $key }}" x-transition
                         class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
                         <button
-                            @click="openEditModal({ id: '{{ $module->id }}', module_title: '{{ $module->module_title }}', content: '{{ $module->content }}', file_path: '{{ $module->file_path }}' })"
+                            @click="showEditModule = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Edit Modules
                         </button>
+
+                        @if ($module->tasks?->isEmpty())
                         <button @click="isSubmissionModalOpen = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Tambah Submission
                         </button>
+                        @else
+                        <button @click="showEditSubmission = true; selectedModul = @js($module); console.log(selectedModul)"
+                            class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Edit Submission
+                        </button>
+                        @endif
+
+                        @if ($module->attendances?->isEmpty())
                         <button @click="showAddAttendance = true; selectedModul = @js($module);"
                             class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                             Tambah Attendance
                         </button>
+                        @else
+                        <button @click="showUpdateAttendance = true; selectedModul = @js($module);"
+                            class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                            Edit Attendance
+                        </button>
+                        @endif
                     </div>
                 </div>
             </h2>
             <div id="module{{ $key }}" class="accordion-collapse hidden">
-                <div class="accordion-body p-4">
+                <div class="accordion-body p-8">
                     <p>{{ $module->content }}</p>
                     <div class="mt-4">
                         @foreach ($module->attendances as $attendance)
@@ -120,47 +142,54 @@
                             <img src="/images/presence.svg" alt="PDF Icon" class="w-5 h-5">
                             {{ $attendance->title }}
                         </a>
+                        <hr>
                         @endif
                         @endforeach
-
+                
                         @if (!empty($module->file_path))
                         <a href="{{ route('module.downloadByFileName', $module->file_path) }}"
                             class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
                             {{ $module->file_path }}
                         </a>
+                        <hr>
                         @endif
-
+                
                         @foreach ($module->tasks as $task)
                         @if (!empty($task->file))
-                        <a href="{{route('task.download', $task->task_id)}}" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        <a href="{{ route('task.download', $task->task_id) }}"
+                            class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/task.svg" alt="PDF Icon" class="w-5 h-5">
                             {{ $task->file }}
                         </a>
+                        <hr>
                         @endif
-
+                
                         @if (!empty($task))
                         <a href="#" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/file.svg" alt="PDF Icon" class="w-5 h-5">
                             {{ $task->description }}
                         </a>
+                        <hr>
                         @endif
                         @endforeach
                     </div>
-                </div>
+                </div>                
             </div>
-            </h2>
         </div>
         @endforeach
 
-        <!-- Add/Edit Attendance Modal -->
-        <div x-show="showAddAttendance" x-transition.opacity x-cloak @keydown.window.escape="showAddAttendance = false"
+        <!-- Attendance Modal -->
+        <!-- Add Attendance Modal -->
+        <div x-show="showAddAttendance" x-transition.opacity x-cloak
+            @keydown.window.escape="showAddAttendance = false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
             <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
                 <h3 class="text-lg font-bold mb-4">Attendance</h3>
                 <!-- FORM -->
-                <form action="{{ route('attendance.create') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <form action="{{ route('attendance.create') }}" method="POST" enctype="multipart/form-data"
+                    class="space-y-4">
                     @csrf
                     <!-- Input Hidden untuk Module ID -->
                     <input type="hidden" name="module_id" :value="selectedModul.module_id">
@@ -174,7 +203,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Attendance Open</label>
                         <div class="flex space-x-2">
-                            <input type="datetime-local" name="attendance_open" required x-model="formData.attendance.attendance_open"
+                            <input type="datetime-local" name="attendance_open" required
+                                x-model="formData.attendance.attendance_open"
                                 class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                         </div>
                     </div>
@@ -182,7 +212,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Deadline</label>
                         <div class="flex space-x-2">
-                            <input type="datetime-local" name="deadline" required x-model="formData.attendance.deadline"
+                            <input type="datetime-local" name="deadline" required
+                                x-model="formData.attendance.deadline"
                                 class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                         </div>
                     </div>
@@ -197,13 +228,63 @@
             </div>
         </div>
 
-        <!-- Add/Edit Submission Modal -->
+        <!-- Update Attendance Modal -->
+        <div x-show="showUpdateAttendance" x-transition.opacity x-cloak
+            @keydown.window.escape="showUpdateAttendance = false"
+            class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="bg-black opacity-50 absolute inset-0"></div>
+            <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
+                <h3 class="text-lg font-bold mb-4">Update Attendance</h3>
+                <!-- FORM -->
+                <form :action="`{{ route('attendance.update', '') }}/${selectedModul.attendances[0].attendance_id}`" method="POST" method="POST">
+                    @csrf
+                    <!-- Input Hidden untuk Attendance ID -->
+                    <input type="hidden" name="attendance_id" :value="formData.attendance.id">
+                    <!-- Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                        <input name="title" type="text" required x-model="selectedModul.attendances[0].title"
+                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <!-- Attendance Open (Tanggal & Jam Mulai) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Attendance Open</label>
+                        <div class="flex space-x-2">
+                            <input type="datetime-local" name="attendance_open" required
+                                x-model="selectedModul.attendances[0].attendance_open"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <!-- Deadline (Batas Akhir Absensi) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Deadline</label>
+                        <div class="flex space-x-2">
+                            <input type="datetime-local" name="deadline" required
+                                x-model="selectedModul.attendances[0].deadline"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" @click="showUpdateAttendance = false"
+                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Attendance Modal -->
+
+        <!--  Submission Modal -->
+        <!-- Add Submission Modal -->
         <div x-show="isSubmissionModalOpen" @keydown.window.escape="isSubmissionModalOpen = false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
             <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
                 <h3 class="text-lg font-bold mb-4">Submission Types</h3>
-                <form action="{{ route('task.store')}}" method="post" enctype="multipart/form-data" class="space-y-4">
+                <form action="{{ route('task.store') }}" method="post" enctype="multipart/form-data"
+                    class="space-y-4">
                     @csrf
 
                     <input type="hidden" name="module_id" :value="selectedModul.module_id">
@@ -235,7 +316,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Deadline</label>
                         <div class="flex space-x-2">
-                            <input type="datetime-local" name="deadline" required x-model="formData.attendance.deadline"
+                            <input type="datetime-local" name="deadline" required
+                                x-model="formData.attendance.deadline"
                                 class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                         </div>
                     </div>
@@ -251,26 +333,83 @@
             </div>
         </div>
 
+        <!-- Add/Edit Submission Modal -->
+        <div x-show="showEditSubmission" @keydown.window.escape="showEditSubmission = false"
+            class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="bg-black opacity-50 absolute inset-0"></div>
+            <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
+                <h3 class="text-lg font-bold mb-4">Submission Types</h3>
+                <form :action="`{{ route('task.store') }}/${selectedModul.tasks[0].task_id}`" method="post" enctype="multipart/form-data"
+                    class="space-y-4">
+                    @csrf
+
+                    <input type="hidden" name="module_id" :value="selectedModul.module_id">
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">File</label>
+                        <div id="file-upload-area"
+                            class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:border-blue-500">
+                            <input name="file" type="file" @change="handleFileChange">
+                        </div>
+                        <p x-text="fileName" class="mt-2 text-sm text-gray-500"></p>
+                    </div>
+
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Title</label>
+                        <input name="title" require x-model="selectedModul.tasks[0].title" type="text"
+                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea name="description" x-model="selectedModul.tasks[0].description" rows="4"
+                            class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    </div>
+
+                    <!-- Date and Time -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Deadline</label>
+                        <div class="flex space-x-2">
+                            <input type="datetime-local" name="deadline" required
+                                x-model="selectedModul.tasks[0].deadline.replace(' ', 'T').slice(0, 16)"
+                                class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" @click="showEditSubmission = false"
+                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--  Submission Modal -->
 
         <!-- Edit Moduls -->
-        <div x-show="isModalOpen" @keydown.window.escape="closeEditModal"
+        <div x-show="showEditModule" x-transition.opacity @keydown.window.escape="showEditModule= false"
             class="fixed inset-0 flex items-center justify-center z-50">
             <div class="bg-black opacity-50 absolute inset-0"></div>
 
             <div class="bg-white rounded-lg shadow-lg w-1/3 relative z-10 p-6 max-h-full overflow-y-auto">
                 <h3 class="text-lg font-bold mb-4">Edit Module</h3>
-                <form @submit.prevent="submitForm" class="space-y-4">
+                <form class="space-y-4" :action="`{{ route('module.update', '') }}/${selectedModul.module_id}`" method="POST" enctype="multipart/form-data">
+                    @csrf
                     <!-- Module Title -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Module Title</label>
-                        <input x-model="formData.module_title" type="text"
+                        <input type="text" x-model="selectedModul.module_title" name="module_title"
                             class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                             required>
                     </div>
                     <!-- Description -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea x-model="formData.content" rows="4"
+                        <textarea rows="4" x-model="selectedModul.content" name="content"
                             class="block w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
                     </div>
 
@@ -278,14 +417,14 @@
                         <label class="block text-sm font-medium text-gray-700">File</label>
                         <div id="file-upload-area"
                             class="mt-1 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4 cursor-pointer hover:border-blue-500">
-                            <input type="file" @change="handleFileChange" multiple>
+                            <input name="file_path" type="file" @change="handleFileChange" multiple>
                         </div>
                         <p x-text="fileName" class="mt-2 text-sm text-gray-500"></p>
                     </div>
                     <!-- Action Buttons -->
                     <div class="flex justify-end space-x-2">
-                        <button type="button" @click="closeEditModal"
-                            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
+                        <button type="button" @click="showEditModule = false
+                                class=" px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancel</button>
                         <button type="submit"
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
                     </div>
@@ -344,13 +483,7 @@
                         formData.append('file_path', this.file);
                     }
 
-                    const response = this.editingModule ?
-                        await axios.post(`/module/${this.editingModule.id}`, formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            },
-                            method: 'POST',
-                        }) :
+                    const response =
                         await axios.post("{{ route('module.store') }}", formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
@@ -384,5 +517,10 @@
         });
     });
     //script dropdown
+    function submitUpdate(event) {
+        let form = event.target;
+        form.action = `/mentor/attendance/${formData.attendance.id}`;
+        form.submit();
+    }
 </script>
 @endsection
