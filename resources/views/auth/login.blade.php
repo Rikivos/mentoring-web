@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @section('content')
 <div class="bg-gray-200 min-h-screen flex items-center justify-center">
     <!-- Card Container -->
@@ -7,9 +8,10 @@
         <h1 class="text-xl font-bold text-gray-800 text-center mb-6">Single Sign On</h1>
 
         <!-- Form -->
-        <form action="" method="POST">
-            <!-- NIM SIA -->
+        <form action="{{ route('login') }}" method="POST">
             @csrf
+
+            <!-- NIM SIA -->
             <div class="mb-4">
                 <label for="nim" class="block text-sm font-medium text-gray-700 mb-1">NIM SIA</label>
                 <input
@@ -17,7 +19,11 @@
                     id="nim"
                     name="nim"
                     class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    placeholder="Masukkan NIM SIA">
+                    placeholder="Masukkan NIM SIA"
+                    value="{{ old('nim') }}">
+                @error('nim')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Kata Sandi -->
@@ -29,10 +35,15 @@
                     name="password"
                     class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     placeholder="Masukkan Kata Sandi">
+                @error('password')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Error Message -->
-            <p class="text-sm text-red-600 mt-1">Perhatikan besar dan kecilnya karakter kata sandi Anda</p>
+            <!-- Error Message jika login gagal -->
+            @if(session('errors'))
+                <p class="text-sm text-red-600 mt-2">{{ session('errors')->first('login') }}</p>
+            @endif
 
             <!-- Submit Button -->
             <button
