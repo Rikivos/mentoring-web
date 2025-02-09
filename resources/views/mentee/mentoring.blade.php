@@ -5,6 +5,10 @@
     <div class="container mx-auto flex justify-center items-center py-4 px-6">
         <a href="{{ route('courses.show', $course->course_slug) }}" class="text-lg font-bold mx-4 underline">Mentoring</a>
         <a href="{{ route('participant', $course->course_slug) }}" class="text-lg font-bold mx-4">Participants</a>
+        <form action="{{ route('unenroll', $course->course_slug) }}" method="POST">
+            @csrf
+            <button type="submit" class="text-lg font-bold mx-4">Unenroll</button>
+        </form>
     </div>
 </div>
 

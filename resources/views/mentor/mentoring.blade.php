@@ -7,6 +7,10 @@
             class="text-lg font-bold mx-4 underline">Mentoring</a>
         <a href="{{ route('mentor.mentoring.participant', $course->course_slug) }}"
             class="text-lg font-bold mx-4">Participants</a>
+        <form action="{{ route('unenroll', $course->course_slug) }}" method="POST">
+            @csrf
+            <button type="submit" class="text-lg font-bold mx-4">Unenroll</button>
+        </form>
     </div>
 </div>
 
@@ -94,9 +98,9 @@
                         @click="openDropdown = openDropdown === {{ $key }} ? null : {{ $key }}"
                         class="text-gray-600 hover:bg-gray-200 rounded-full p-2">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M20 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6h-2m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4"/>
+                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M20 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6h-2m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4m16 6H10m0 0a2 2 0 1 0-4 0m4 0a2 2 0 1 1-4 0m0 0H4" />
                         </svg>
-                          
+
                     </button>
                     <div x-show="openDropdown === {{ $key }}" x-transition
                         class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
@@ -145,7 +149,7 @@
                         <hr>
                         @endif
                         @endforeach
-                
+
                         @if (!empty($module->file_path))
                         <a href="{{ route('module.downloadByFileName', $module->file_path) }}"
                             class="flex items-center gap-2 text-blue-500 hover:underline">
@@ -154,7 +158,7 @@
                         </a>
                         <hr>
                         @endif
-                
+
                         @foreach ($module->tasks as $task)
                         @if (!empty($task->file))
                         <a href="{{ route('task.download', $task->task_id) }}"
@@ -164,7 +168,7 @@
                         </a>
                         <hr>
                         @endif
-                
+
                         @if (!empty($task))
                         <a href="#" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/file.svg" alt="PDF Icon" class="w-5 h-5">
@@ -174,7 +178,7 @@
                         @endif
                         @endforeach
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
         @endforeach

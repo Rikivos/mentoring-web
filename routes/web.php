@@ -45,6 +45,9 @@ Route::get('/mycourse/participant/{slug}', [MyCourseController::class, 'showPart
 Route::get('/enroll/{slug}', [CourseController::class, 'view'])->name('enroll');;
 Route::post('/enroll/{slug}')->name('enroll.post');
 
+//unEnroll
+Route::post('/unenroll/{slug}', [CourseController::class, 'unenroll'])->name('unenroll');
+
 //module
 Route::get('/module/download/{fileName}', [MentorController::class, 'downloadByFileName'])->name('module.downloadByFileName');
 
