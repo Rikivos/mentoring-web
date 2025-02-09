@@ -57,7 +57,7 @@
                         </ul>
                     @else
                         <div class="text-center">
-                            <img src="/images/timeline.svg" alt="No Activities" class="w-16 h-16 mx-auto">
+                            
                             <p class="text-gray-500 mt-2">No activities require action</p>
                         </div>
                     @endif

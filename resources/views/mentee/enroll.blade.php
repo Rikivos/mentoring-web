@@ -2,13 +2,13 @@
 
 @section('content')
 @if (session('message'))
-<div class="bg-green-100 text-green-700 p-4 rounded-lg mb-6">
+<div class="bg-green-100 text-green-700 p-4 text-center rounded-lg mb-6">
     {{ session('message') }}
 </div>
 @endif
 
 @if (session('error'))
-<div class="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+<div class="bg-red-100 text-red-700 p-4 text-center rounded-lg mb-6">
     {{ session('error') }}
 </div>
 @endif
