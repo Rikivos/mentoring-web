@@ -83,6 +83,11 @@ class AttendanceController extends Controller
 
         $now = Carbon::now('Asia/Jakarta');
         $deadline = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->deadline, 'Asia/Jakarta')->startOfSecond();
+        $attendanceOpen = Carbon::createFromFormat('Y-m-d H:i:s', $attendance->attendance_open, 'Asia/Jakarta')->startOfSecond();
+
+        if ($now->lt($attendanceOpen)) {
+            return redirect()->back()->with('error', 'Attendance is not open yet.');
+        }
 
         if ($now->gt($deadline)) {
             $attendanceUser = AttendanceUser::create([

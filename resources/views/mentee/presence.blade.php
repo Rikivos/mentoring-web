@@ -1,6 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+
+@if (session('message'))
+<div class="bg-green-100 text-green-700 p-4 text-center rounded-lg mb-6">
+    {{ session('message') }}
+</div>
+@endif
+
+@if (session('error'))
+<div class="bg-red-100 text-red-700 p-4 text-center rounded-lg mb-6">
+    {{ session('error') }}
+</div>
+@endif
+
 <div class="container mx-auto p-4">
     <!-- Header Section -->
     <div class="text-left mb-8">
