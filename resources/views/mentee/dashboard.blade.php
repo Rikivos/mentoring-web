@@ -43,17 +43,24 @@
                         <img src="/images/agenda.png" alt="Agenda & Tugas" class="w-8 h-8 mr-4">
                         <h3 class="text-lg font-bold">Agenda & Tugas</h3>
                     </div>
-                    <ul id="agenda-list">
-                        <!-- Agenda items will be dynamically added here -->
-                        @foreach ($events as $event)
-                            <li class="text-gray-700 mb-2">
-                                <span class="font-semibold">{{ $event['title'] }}</span>
-                                <span class="ml-2 text-sm text-gray-500">
-                                    {{ \Carbon\Carbon::parse($event['start'])->format('d M Y, H:i') }}
-                                </span>
-                            </li>
-                        @endforeach
-                    </ul>
+                    @if (count($events) > 0)
+                        <ul id="agenda-list">
+                            <!-- Agenda items will be dynamically added here -->
+                            @foreach ($events as $event)
+                                <li class="text-gray-700 mb-2">
+                                    <span class="font-semibold">{{ $event['title'] }}</span>
+                                    <span class="ml-2 text-sm text-gray-500">
+                                        {{ \Carbon\Carbon::parse($event['start'])->format('d M Y, H:i') }}
+                                    </span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="text-center">
+                            <img src="/images/timeline.svg" alt="No Activities" class="w-16 h-16 mx-auto">
+                            <p class="text-gray-500 mt-2">No activities require action</p>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Kalender Utama -->
