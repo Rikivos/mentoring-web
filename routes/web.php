@@ -109,14 +109,13 @@ Route::prefix('mentor')->group(function () {
 
     Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
     Route::post('/attendance/{id}', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
+    Route::get('/attendance/{attendance_id}', [AttendanceController::class, 'show'])->name('attendance.show');
 
     Route::post('/task', [TaskController::class, 'store'])->name('task.store');
     Route::post('/task/{id}', [TaskController::class, 'update'])->name('task.update');
 
     Route::get('/submission/{task_id}', [MentorSubmissionController::class, 'index'])->name('submission.show');
     Route::get('/submission/download/{assignment_id}', [MentorSubmissionController::class, 'download'])->name('submission.download');
-    Route::get('/presence/{attendance_id}', [MentorSubmissionController::class, 'index'])->name('attendance.show');
-    Route::get('/presence/download/{attendance_id}', [MentorSubmissionController::class, 'download'])->name('attendance.download');
 });
 
 

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Mentor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\AttendanceUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AttendanceController extends Controller
@@ -41,7 +43,7 @@ class AttendanceController extends Controller
         }
     }
 
-
+    // Update attendance
     public function updateAttendance(Request $request, $attendance_id)
     {
         $validator = Validator::make($request->all(), [
@@ -66,6 +68,34 @@ class AttendanceController extends Controller
             $attendance->save();
 
             return redirect()->back()->with('success', 'Attendance updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    // show attendance
+    public function show($attendance_id)
+    {
+        try {
+            $user = Auth::user();
+
+            if ($user->role !== 'mentor') {
+                return redirect()->route('notMentor');
+            }
+
+            $attendances = AttendanceUser::where('attendance_id', $attendance_id)
+                ->with('user')
+                ->get()
+                ->map(function ($attendance) {
+                    $attendance->formatted_date = Carbon::parse($attendance->created_at)->format('d M Y, H:i');
+                    return $attendance;
+                });
+
+            if (!$attendances) {
+                return redirect()->back()->with('error', 'Attendance record not found');
+            }
+
+            return view('mentor.checkPrecense', compact('attendances'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

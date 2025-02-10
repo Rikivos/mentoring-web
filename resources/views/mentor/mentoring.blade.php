@@ -142,7 +142,7 @@
                     <div class="mt-4">
                         @foreach ($module->attendances as $attendance)
                         @if (!empty($attendance))
-                        <a href="/presence" class="flex items-center gap-2 text-blue-500 hover:underline">
+                        <a href="{{ route('attendance.show', $attendance->attendance_id) }}" class="flex items-center gap-2 text-blue-500 hover:underline">
                             <img src="/images/presence.svg" alt="PDF Icon" class="w-5 h-5">
                             {{ $attendance->title }}
                         </a>
