@@ -109,6 +109,7 @@ Route::prefix('mentor')->group(function () {
 
     Route::post('/attendance', [AttendanceController::class, 'createAttendance'])->name('attendance.create');
     Route::post('/attendance/{id}', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
+    Route::get('/attendance/{attendance_id}', [AttendanceController::class, 'show'])->name('attendance.show');
 
     Route::post('/task', [TaskController::class, 'store'])->name('task.store');
     Route::post('/task/{id}', [TaskController::class, 'update'])->name('task.update');
