@@ -45,7 +45,12 @@ class LogbookController extends Controller
         }
 
         $report->status = $request->input('status');
-        $report->comment = $request->input('comment', '');
+        if ($request->input('comment') != null) {
+            $report->comment = $request->input('comment');
+        } else {
+
+            $report->comment = '';
+        }
         $report->save();
 
         return redirect()->back()->with('success', 'Report updated successfully.');
