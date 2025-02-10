@@ -115,6 +115,8 @@ Route::prefix('mentor')->group(function () {
 
     Route::get('/submission/{task_id}', [MentorSubmissionController::class, 'index'])->name('submission.show');
     Route::get('/submission/download/{assignment_id}', [MentorSubmissionController::class, 'download'])->name('submission.download');
+    Route::get('/presence/{attendance_id}', [MentorSubmissionController::class, 'index'])->name('attendance.show');
+    Route::get('/presence/download/{attendance_id}', [MentorSubmissionController::class, 'download'])->name('attendance.download');
 });
 
 
