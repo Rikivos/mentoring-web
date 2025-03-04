@@ -78,9 +78,6 @@
                         <label class="flex items-center">
                             <input type="radio" name="status" value="izin" x-model="tempStatus" class="mr-2"> Izin
                         </label>
-                        <label class="flex items-center">
-                            <input type="radio" name="status" value="tidak hadir" x-model="tempStatus" class="mr-2"> Tidak Hadir
-                        </label>
                     </div>
 
                     <div class="flex justify-end mt-4">
