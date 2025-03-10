@@ -21,11 +21,13 @@ class DataCourseController extends Controller
 
         $mentors = User::where('role', 'mentor')->with('courses')->get();
 
-        $courses = Course::with(['mentor'])
+        $pembimbings = User::where('role', 'pembimbing')->with('courses')->get();
+
+        $courses = Course::with(['mentor', 'pembimbing'])
             ->withCount('users')
             ->get();
 
-        return view('admin.class', compact('mentors', 'courses'));
+        return view('admin.class', compact('mentors', 'courses', 'pembimbings'));
     }
 
 
@@ -35,9 +37,11 @@ class DataCourseController extends Controller
         $validated = $request->validate([
             'course_title' => 'required|string|max:255',
             'mentor_id' => 'required|exists:users,id',
+            'pembimbing_id' => 'required|exists:users,id',
         ]);
 
         $mentor = User::where('id', $validated['mentor_id'])->where('role', 'mentor')->first();
+        $pembimbing = User::where('id', $validated['pembimbing_id'])->where('role', 'pembimbing')->first();
 
         if (!$mentor) {
             return back()->withErrors(['error' => 'Mentor dengan ID tersebut tidak ditemukan atau bukan seorang mentor.']);
@@ -49,6 +53,7 @@ class DataCourseController extends Controller
             'course_title' => $validated['course_title'],
             'course_slug' => $course_slug,
             'mentor_id' => $mentor->id,
+            'pembimbing_id' => $pembimbing->id,
         ]);
 
         return redirect()->back()->with('success', 'Course berhasil ditambahkan!');
@@ -60,6 +65,7 @@ class DataCourseController extends Controller
         $validated = $request->validate([
             'course_title' => 'required|string|max:255',
             'mentor_id' => 'required|exists:users,id',
+            'pembimbing_id' => 'required|exists:users,id',
         ]);
 
         $course = Course::find($id);
@@ -69,6 +75,7 @@ class DataCourseController extends Controller
         }
 
         $mentor = User::find($validated['mentor_id']);
+        $pembimbing = User::find($validated['pembimbing_id']);
 
         if (!$mentor || $mentor->role !== 'mentor') {
             return response()->json(['error' => 'Mentor dengan ID tersebut tidak ditemukan atau bukan seorang mentor.'], 404);
@@ -78,6 +85,7 @@ class DataCourseController extends Controller
             'course_title' => $validated['course_title'],
             'course_slug' => Str::slug($validated['course_title'], '-'),
             'mentor_id' => $mentor->id,
+            'pembimbing_id' => $pembimbing->id,
         ]);
 
         return response()->json(['success' => 'Course berhasil diperbarui!']);
