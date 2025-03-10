@@ -12,33 +12,72 @@
             font-size: 12px;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid black;
+        h1,
+        h2 {
+            font-size: medium;
+            margin: 5px;
+            text-align: center;
         }
 
-        th,
-        td {
+        .header-table {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .header-table td {
+            vertical-align: middle;
+        }
+
+        .header-table img {
+            width: 80px;
+            height: 80px;
+        }
+
+        hr {
+            border: 2px solid black;
+            margin: 5px 0;
+        }
+
+        .presensi-table,
+        .presensi-table th,
+        .presensi-table td {
+            border: 1px solid black;
             text-align: center;
             padding: 5px;
         }
 
-        th {
+        .presensi-table th {
             background-color: #f2f2f2;
         }
     </style>
 </head>
 
 <body>
-    <h2 style="text-align: center;">Recap Presensi</h2>
+    <table class="header-table">
+        <tr>
+            <td style="width: 20%; text-align: left;">
+                <img src="images/LPPI.png" alt="Logo LPPI">
+            </td>
+            <td style="width: 60%;">
+                <h1>LEMBAGA PENGKAJIAN DAN PENGAMALAN ISLAM</h1>
+                <h2>UNIVERSITAS MUHAMMADIYAH PURWOKERTO</h2>
+            </td>
+            <td style="width: 20%; text-align: right;">
+                <img src="images/UMPLogo.png" alt="Logo UMP">
+            </td>
+        </tr>
+    </table>
+    <hr>
+
+    <h2>Rekap Presensi</h2>
 
     @if ($course)
     <p><strong>Kelas:</strong> {{ $course->course_title }}</p>
     <p><strong>Mentor:</strong> {{ $course->mentor_name }}</p>
     @endif
 
-    <table>
+    <table class="presensi-table">
         <thead>
             <tr>
                 <th>No.</th>
@@ -74,7 +113,6 @@
                     {{ $status }}
                     </td>
                     @endfor
-
                     <td>{{ $data->total_hadir }}</td>
             </tr>
             @endforeach
