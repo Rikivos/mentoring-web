@@ -10,17 +10,19 @@
     <!-- Dashboard Content -->
     <div class="w-2/3 p-4 justify-between items-center container mx-auto">
         <!-- Dashboard Stats -->
-        <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="grid {{ session('role') !== 'pembimbing' ? 'grid grid-cols-3' : 'grid grid-cols-2' }} gap-4 mb-6">
             <div class="p-4 bg-white shadow-md rounded-md text-center">
                 <i class="fas fa-school text-blue-500 text-2xl mb-2"></i>
                 <p class="text-gray-600">Jumlah Kelas</p>
                 <h2 class="text-2xl font-bold">{{ $totalClasses }}</h2>
             </div>
+            @if (session('role') !== 'pembimbing')
             <div class="p-4 bg-white shadow-md rounded-md text-center">
                 <i class="fas fa-users text-green-500 text-2xl mb-2"></i>
                 <p class="text-gray-600">Jumlah Mahasiswa</p>
                 <h2 class="text-2xl font-bold">{{ $totalMentees }}</h2>
             </div>
+            @endif
             <div class="p-4 bg-white shadow-md rounded-md text-center">
                 <i class="fas fa-chalkboard-teacher text-purple-500 text-2xl mb-2"></i>
                 <p class="text-gray-600">Jumlah Mentor</p>
