@@ -62,6 +62,17 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="mb-4">
+                                <label for="add_pembimbing_name" class="block text-sm font-medium text-gray-700">Pembimbing</label>
+                                <select id="add_pembimbing_name" name="pembimbing_id"
+                                    x-model="newCourse.mentor_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="" disabled selected>Pilih Pembimbing</option>
+                                    @foreach ($pembimbings as $pembimbing)
+                                    <option value="{{ $pembimbing->id }}">{{ $pembimbing->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
 
                             <div class="flex justify-end">
                                 <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded mr-2"
@@ -110,11 +121,13 @@
                             <td class="p-2">{{ $course->course_title }}</td>
                             <td class="p-2">{{ $course->users_count }}</td>
                             <td class="p-2">{{ $course->mentor->name ?? 'Tidak ada mentor' }}</td>
+                            <td class="p-2">{{ $course->pembimbing->name ?? 'Tidak ada pembimbing' }}</td>
                             <td class="p-2">
                                 <button class="bg-blue-500 text-white px-4 py-2 rounded"
                                     data-id="{{ $course->course_id }}"
                                     data-title="{{ $course->course_title }}"
                                     data-mentor-id="{{ $course->mentor->id ?? '' }}"
+                                    data-pembimbing-id="{{ $course->pembimbing->id ?? '' }}"
                                     @click="openEditModal($event)">
                                     Edit
                                 </button>
@@ -153,6 +166,16 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="mb-4">
+                                <label for="edit_pembimbing_name" class="block text-sm font-medium text-gray-700">Mentor</label>
+                                <select id="edit_pembimbing_name" x-model="editCourse.pembimbing_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="" disabled>Pilih Mentor</option>
+                                    @foreach ($pembimbings as $pembimbing)
+                                    <option value="{{ $pembimbing->id }}">{{ $pembimbing->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="flex justify-end">
                                 <button type="button" class="bg-gray-300 text-black px-4 py-2 rounded mr-2"
                                     @click="showEditModal = false">
@@ -179,6 +202,7 @@
                 course_id: null,
                 course_title: '',
                 mentor_id: null,
+                pembimbing_id: null,
             },
 
             openEditModal(event) {
@@ -187,6 +211,7 @@
                 this.editCourse.course_id = button.getAttribute('data-id');
                 this.editCourse.course_title = button.getAttribute('data-title');
                 this.editCourse.mentor_id = button.getAttribute('data-mentor-id');
+                this.editCourse.pembimbing_id = button.getAttribute('data-pembimbing-id');
 
                 this.showEditModal = true;
             },
@@ -208,6 +233,7 @@
                         body: JSON.stringify({
                             course_title: this.editCourse.course_title,
                             mentor_id: this.editCourse.mentor_id,
+                            pembimbing_id: this.editCourse.pembimbing_id,
                         }),
                     })
                     .then((response) => response.json())
@@ -277,6 +303,7 @@
             newCourse: {
                 course_title: '',
                 mentor_id: '',
+                pembimbing_id: '',
             },
         };
     }

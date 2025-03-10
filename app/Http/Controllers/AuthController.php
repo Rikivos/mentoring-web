@@ -30,7 +30,7 @@ class AuthController extends Controller
 
             session(['role' => $role]);
 
-            if ($role === 'petugas') {
+            if ($role === 'petugas' || $role === 'pembimbing') {
                 return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
             } else {
                 return redirect()->route('dashboard')->with('success', 'Login berhasil!');

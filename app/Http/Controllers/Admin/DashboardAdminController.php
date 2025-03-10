@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardAdminController extends Controller
 {
@@ -14,26 +15,40 @@ class DashboardAdminController extends Controller
     {
         $role = session('role');
 
-        if ($role !== 'petugas') {
+        if ($role === 'petugas') {
+            $totalClasses = Course::count();
+            $totalMentees = User::where('role', 'mente')->count();
+            $totalMentors = User::where('role', 'mentor')->count();
+
+            $courses = Course::with(['mentor', 'users' => function ($query) {
+                $query->where('role', 'mente');
+            }])->get();
+        } elseif ($role === 'pembimbing') {
+            $userId = Auth::user()->id;
+
+            $totalClasses = Course::where('pembimbing_id', $userId)->count();
+            $totalMentees = User::whereHas('courses', function ($query) use ($userId) {
+                $query->where('pembimbing_id', $userId);
+            })->where('role', 'mente')->count();
+            $totalMentors = User::whereHas('courses', function ($query) use ($userId) {
+                $query->where('pembimbing_id', $userId);
+            })->where('role', 'mentor')->count();
+
+            $courses = Course::with(['mentor', 'users' => function ($query) {
+                $query->where('role', 'mente');
+            }])->where('pembimbing_id', $userId)->get();
+        } else {
             return redirect()->route('dashboard');
         }
 
-        $totalClasses = Course::count();
-        $totalMentees = User::where('role', 'mente')->count();
-        $totalMentors = User::where('role', 'mentor')->count();
-
-        $courses = Course::with(['mentor', 'users' => function ($query) {
-            $query->where('role', 'mente');
-        }])
-            ->get()
-            ->map(function ($course) {
-                return [
-                    'id' => $course->course_id,
-                    'name' => $course->course_title,
-                    'mentor_name' => $course->mentor ? $course->mentor->name : 'No mentor assigned',
-                    'participants_count' => $course->users->count(),
-                ];
-            });
+        $courses = $courses->map(function ($course) {
+            return [
+                'id' => $course->course_id,
+                'name' => $course->course_title,
+                'mentor_name' => $course->mentor ? $course->mentor->name : 'No mentor assigned',
+                'participants_count' => $course->users->count(),
+            ];
+        });
 
         return view('admin.dashboard', compact('totalClasses', 'totalMentees', 'totalMentors', 'courses'));
     }

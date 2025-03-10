@@ -8,6 +8,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
@@ -15,27 +16,39 @@ class AttendanceController extends Controller
     {
         $role = session('role');
 
-        if ($role !== 'petugas') {
+        $search = $request->input('search');
+
+        if ($role === 'petugas') {
+            $courses = Course::with(['mentor', 'users' => function ($query) {
+                $query->where('role', 'mente');
+            }])
+                ->when($search, function ($query, $search) {
+                    $query->where('course_title', 'like', '%' . $search . '%');
+                })
+                ->get();
+        } elseif ($role === 'pembimbing') {
+            $user = Auth::user();
+
+            $courses = Course::where('pembimbing_id', $user->id)
+                ->with(['mentor', 'users' => function ($query) {
+                    $query->where('role', 'mente');
+                }])
+                ->when($search, function ($query, $search) {
+                    $query->where('course_title', 'like', '%' . $search . '%');
+                })
+                ->get();
+        } else {
             return redirect()->route('dashboard');
         }
 
-        $search = $request->input('search');
-
-        $courses = Course::with(['mentor', 'users' => function ($query) {
-            $query->where('role', 'mente');
-        }])
-            ->when($search, function ($query, $search) {
-                $query->where('course_title', 'like', '%' . $search . '%');
-            })
-            ->get()
-            ->map(function ($course) {
-                return [
-                    'id' => $course->course_id,
-                    'name' => $course->course_title,
-                    'mentor_name' => $course->mentor ? $course->mentor->name : 'No mentor assigned',
-                    'participants_count' => $course->users->count(),
-                ];
-            });
+        $courses = $courses->map(function ($course) {
+            return [
+                'id' => $course->course_id,
+                'name' => $course->course_title,
+                'mentor_name' => $course->mentor ? $course->mentor->name : 'No mentor assigned',
+                'participants_count' => $course->users->count(),
+            ];
+        });
 
         return view('admin.attendance', compact('courses', 'search'));
     }
