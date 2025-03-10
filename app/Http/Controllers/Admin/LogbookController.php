@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class LogbookController extends Controller
 {
@@ -16,11 +17,15 @@ class LogbookController extends Controller
     {
         $role = session('role');
 
-        if ($role !== 'petugas') {
+        if ($role === 'petugas') {
+            $courses = Course::with('reports')->get();
+        } elseif ($role === 'pembimbing') {
+            $user = Auth::user();
+
+            $courses = Course::where('pembimbing_id', $user->id)->with('reports')->get();
+        } else {
             return redirect()->route('dashboard');
         }
-
-        $courses = Course::with('reports')->get();
 
         $courses->each(function ($course) {
             $course->reports->each(function ($report) {
@@ -28,6 +33,7 @@ class LogbookController extends Controller
                 $report->end_time = Carbon::parse($report->end_time)->format('H:i');
             });
         });
+
         return view('admin.report', compact('courses'));
     }
 
