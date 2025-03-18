@@ -171,7 +171,7 @@
                                 <label for="edit_pembimbing_name" class="block text-sm font-medium text-gray-700">Mentor</label>
                                 <select id="edit_pembimbing_name" x-model="editCourse.pembimbing_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                    <option value="" disabled>Pilih Mentor</option>
+                                    <option value="" disabled>Pilih Pembimbing</option>
                                     @foreach ($pembimbings as $pembimbing)
                                     <option value="{{ $pembimbing->id }}">{{ $pembimbing->name }}</option>
                                     @endforeach
