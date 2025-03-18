@@ -13,7 +13,7 @@
             <!-- Kelola Kelas -->
             <div class="bg-white shadow-md rounded-md p-4 mt-6">
                 <!-- Judul -->
-                <h2 class="text-xl font-bold mb-4">Kelola Kelas</h2>
+                <h2 class="text-xl font-bold mb-4">Kelola Kelompok</h2>
 
                 <!-- Tombol Tambah dan Pencarian -->
 
