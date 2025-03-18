@@ -16,6 +16,7 @@ use App\Http\Controllers\Mentor\TaskController as TaskController;
 use App\Http\Controllers\Mentor\SubmissionController as MentorSubmissionController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\LogbookController as AdminLogbookController;
+use App\Http\Controllers\Admin\PembimbingController as AdminPembimbingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\Dashboard\DashboardController as DashboardController;
@@ -92,6 +93,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::prefix('report')->group(function () {
         Route::get('/', [AdminLogbookController::class, 'index'])->name('admin.report');
         Route::put('/update/{id}', [AdminLogbookController::class, 'updateLogbook'])->name('admin.update.report');
+    });
+    Route::prefix('pembimbing')->group(function () {
+        Route::get('/', [AdminPembimbingController::class, 'index'])->name('admin.pembimbing');
+        Route::post('/add', [AdminPembimbingController::class, 'addPembimbing'])->name('admin.addPembimbing');
+        Route::post('/destroy', [AdminPembimbingController::class, 'destroyPembimbing'])->name('admin.destroyPembimbing');
     });
 });
 
