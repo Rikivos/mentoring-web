@@ -112,6 +112,7 @@
                             <th class="text-left p-2">Kelompok</th>
                             <th class="text-left p-2">Jumlah</th>
                             <th class="text-left p-2">Mentor</th>
+                            <th class="text-left p-2">Pembimbing</th>
                             <th class="text-left p-2">Aksi</th>
                         </tr>
                     </thead>
